@@ -1,21 +1,44 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.VERSION = void 0;
-exports.VERSION = "0.0.1";
-__exportStar(require("./types"), exports);
-__exportStar(require("./events"), exports);
-//# sourceMappingURL=index.js.map
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/index.ts
+var index_exports = {};
+__export(index_exports, {
+  RoomState: () => RoomState,
+  VERSION: () => VERSION
+});
+module.exports = __toCommonJS(index_exports);
+
+// src/types.ts
+var RoomState = /* @__PURE__ */ ((RoomState2) => {
+  RoomState2["LOBBY"] = "LOBBY";
+  RoomState2["PRE_ROUND"] = "PRE_ROUND";
+  RoomState2["PLAYING"] = "PLAYING";
+  RoomState2["POST_ROUND"] = "POST_ROUND";
+  RoomState2["GAME_OVER"] = "GAME_OVER";
+  return RoomState2;
+})(RoomState || {});
+
+// src/index.ts
+var VERSION = "0.0.1";
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  RoomState,
+  VERSION
+});
