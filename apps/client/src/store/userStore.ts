@@ -10,7 +10,7 @@ interface UserState {
     socket: Socket | null;
     timeSync: TimeSync | null;
     loginGuest: () => Promise<void>;
-    register: (nickname: string, password: string, email: string) => Promise<{ success: boolean, error?: string, requiresVerification?: boolean }>;
+    register: (nickname: string, password: string, email: string) => Promise<{ success: boolean, error?: string, requiresVerification?: boolean, debugCode?: string }>;
     verifyAccount: (email: string, code: string) => Promise<{ success: boolean, error?: string }>;
     login: (nickname: string, password: string) => Promise<{ success: boolean, error?: string }>;
     logout: () => void;
@@ -48,7 +48,7 @@ export const useUserStore = create<UserState>()(
                     if (data.error) return { success: false, error: data.error };
 
                     if (data.requiresVerification) {
-                        return { success: true, requiresVerification: true };
+                        return { success: true, requiresVerification: true, debugCode: data.debugCode };
                     }
 
                     set({ user: data.user, token: data.token });

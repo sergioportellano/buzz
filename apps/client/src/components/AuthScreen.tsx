@@ -36,7 +36,8 @@ export function AuthScreen() {
             if (!res.success) {
                 setError(res.error || 'Registration failed');
             } else if (res.requiresVerification) {
-                setSuccessMsg("Registration successful! Please check your email/console for the verification code.");
+                const codeMsg = res.debugCode ? ` Code: ${res.debugCode}` : ' Please check your email/console.';
+                setSuccessMsg(`Registration successful!${codeMsg} (Development Mode)`);
                 setMode('verify');
             }
             return;

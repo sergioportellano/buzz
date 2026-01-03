@@ -40,7 +40,7 @@ export class AuthService {
                     // Send Verification Email
                     console.error(`[Legacy/Claim] Sending verification email to ${email}`);
                     await EmailService.sendVerificationEmail(email, code);
-                    return { requiresVerification: true };
+                    return { requiresVerification: true, debugCode: code }; // Return code for UI display as requested
                 }
 
                 // If verified, then it's a real duplicate
@@ -64,7 +64,7 @@ export class AuthService {
             console.error(`Verification email sent to ${email}`);
 
             // Do NOT return token yet. Require verification.
-            return { requiresVerification: true };
+            return { requiresVerification: true, debugCode: code }; // Return code for UI display as requested
 
         } catch (e: any) {
             if (e.code === 'P2002') {
