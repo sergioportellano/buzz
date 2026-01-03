@@ -72,10 +72,14 @@ export function GameScene() {
                     const totalPodiums = room.maxPlayers || 4;
                     const slotIndex = player.slot !== undefined ? player.slot : index;
                     const x = (slotIndex - (totalPodiums - 1) / 2) * 1.5 + 1.5;
+
+                    // Specific offset for Tralalero model which seems to be centered differently
+                    const zOffset = player.avatarId === 'tralalero.glb' ? -0.5 : 0;
+
                     return (
                         <group key={playerId} rotation={[0, 5 * (Math.PI / 180), 0]}>
                             <Avatar
-                                position={[x, -0.7, 0.65]}
+                                position={[x, -0.7, 0.65 + zOffset]}
                                 label={player.nickname}
                                 chatMessage={chatMsg?.text}
                                 messageTimestamp={chatMsg?.timestamp}
