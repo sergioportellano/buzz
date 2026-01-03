@@ -4,6 +4,7 @@ import { useUserStore } from './store/userStore';
 import { useGameStore, initGameListeners } from './store/gameStore';
 import { RoomState } from '@buzz/shared';
 import { GameScene } from './components/GameScene';
+import { ChatInput } from './components/ChatInput';
 
 function App() {
   const { user, socket, loginGuest, connectSocket } = useUserStore();
@@ -58,6 +59,7 @@ function App() {
             )}
 
           </div>
+          <ChatInput />
         </div>
       ) : (
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>

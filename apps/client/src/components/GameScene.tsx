@@ -3,7 +3,6 @@ import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
 import { Stage } from './Stage';
 import { Avatar } from './Avatar';
 import { useGameStore } from '../store/gameStore';
-import { ChatInput } from './ChatInput';
 
 export function GameScene() {
     const { room } = useGameStore();
@@ -43,7 +42,6 @@ export function GameScene() {
 
                 <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
             </Canvas>
-            <ChatInput />
         </div>
     );
 }
