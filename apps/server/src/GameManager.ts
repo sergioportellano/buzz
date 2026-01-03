@@ -103,7 +103,7 @@ export class GameManager {
                 for (const [id, s] of sockets) {
                     const sUser = (s as any).user as UserProfile;
                     if (sUser && sUser.id === targetId) {
-                        s.emit('kicked', 'You have been kicked from the room.');
+                        s.emit('kicked', 'Host te ha kickeado de la sala');
                         s.leave(room.id);
                         break;
                     }
