@@ -33,7 +33,7 @@ function Podium({ position, label }: { position: [number, number, number], label
             <Suspense fallback={null}>
                 <GameAsset
                     path="/models/podio.glb"
-                    scale={1.5}
+                    scale={0.08}
                     position={[0, 0, 0]}
                 />
             </Suspense>
