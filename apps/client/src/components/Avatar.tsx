@@ -5,7 +5,9 @@ import * as THREE from 'three';
 import { GameAsset } from './GameAsset';
 import { Suspense } from 'react';
 
-export function Avatar({ position = [0, 0, 0] }: { position?: [number, number, number] }) {
+import { Text } from '@react-three/drei';
+
+export function Avatar({ position = [0, 0, 0], label = "" }: { position?: [number, number, number], label?: string }) {
     // Inner ref for animation only
     const animRef = useRef<THREE.Group>(null);
 
@@ -29,6 +31,14 @@ export function Avatar({ position = [0, 0, 0] }: { position?: [number, number, n
                     />
                 </Suspense>
             </group>
+            {/* Debug Label */}
+            <mesh position={[0, 2.5, 0]}>
+                <sphereGeometry args={[0.2]} />
+                <meshBasicMaterial color="red" />
+            </mesh>
+            <Text position={[0, 2.8, 0]} fontSize={0.5} color="white" anchorX="center" anchorY="bottom">
+                {label}
+            </Text>
         </group>
     );
 }
