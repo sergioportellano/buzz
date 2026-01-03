@@ -1,6 +1,7 @@
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
+import { SkeletonUtils } from 'three-stdlib';
 
 interface GameAssetProps {
     path: string;
@@ -25,8 +26,8 @@ export function GameAsset({
     const { scene, animations } = useGLTF(path);
     const { actions } = useAnimations(animations, group);
 
-    // Cloning scene to allow multiple instances (like avatars)
-    const clone = useMemo(() => scene.clone(), [scene]);
+    // Cloning scene properly for SkinnedMeshes (Avatars)
+    const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 
     useEffect(() => {
         // Simple animation player
