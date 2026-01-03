@@ -20,7 +20,10 @@ export function GameScene() {
                 {/* Environment */}
                 <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
 
-                <Stage podiums={4} />
+                <Stage
+                    podiums={4}
+                    players={room ? Object.keys(room.players).sort().map(id => room.players[id]) : []}
+                />
 
                 {/* Players */}
                 {/* Players */}
@@ -32,7 +35,7 @@ export function GameScene() {
                     return (
                         <Avatar
                             key={playerId}
-                            position={[x, -1.5, 0]}
+                            position={[x, -1.0, 0]}
                             label={`${player.nickname} (${index})`}
                             chatMessage={chatMsg?.text}
                             messageTimestamp={chatMsg?.timestamp}

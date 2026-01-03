@@ -1,8 +1,9 @@
 import { Text } from '@react-three/drei';
 import { GameAsset } from './GameAsset';
 import { Suspense } from 'react';
+import type { Player } from '@buzz/shared';
 
-export function Stage({ podiums = 4 }) {
+export function Stage({ podiums = 4, players = [] }: { podiums?: number, players?: Player[] }) {
     return (
         <group position={[0, -2, 0]}>
             {/* Imported Stage Model */}
@@ -14,33 +15,40 @@ export function Stage({ podiums = 4 }) {
                 />
             </Suspense>
 
-            {/* Podiums (We keep them generated code-side for dynamic placement) */}
+            {/* Podiums */}
             {Array.from({ length: podiums }).map((_, i) => {
-                // Or simple linear line for MVP
                 const xLin = (i - (podiums - 1) / 2) * 1.5;
+                const player = players[i];
+                const score = player ? player.score : 0;
+                // Use nickname if available, else empty or label? User asked for POINTS.
+                // "un letrero con los puntos"
 
-                return <Podium key={i} position={[xLin, 0, 1]} label={`P${i + 1}`} />
+                return <Podium key={i} position={[xLin, 0, 1]} score={score} hasPlayer={!!player} />
             })}
         </group>
     );
 }
 
 
-function Podium({ position, label }: { position: [number, number, number], label: string }) {
+function Podium({ position, score, hasPlayer }: { position: [number, number, number], score: number, hasPlayer: boolean }) {
     return (
         <group position={position}>
-            {/* Imported Podium Model */}
-            <Suspense fallback={null}>
-                <GameAsset
-                    path="/models/podio.glb"
-                    scale={0.2}
-                    position={[0, 0.6, 0]}
-                />
-            </Suspense>
+            {/* Base - Procedural Cylinder */}
+            <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
+                <cylinderGeometry args={[0.4, 0.4, 1, 32]} />
+                <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
+            </mesh>
 
-            {/* Text Label */}
-            <Text position={[0, 1.2, 0]} fontSize={0.4} color="black" anchorX="center">
-                {label}
+            {/* Light Strip */}
+            <mesh position={[0, 0.5, 0.41]}>
+                <planeGeometry args={[0.2, 0.8]} />
+                <meshBasicMaterial color={hasPlayer ? "cyan" : "gray"} toneMapped={false} />
+            </mesh>
+
+            {/* Score Label (only if player exists? or always show 0?) */}
+            {/* User asked for "letrero con los puntos" */}
+            <Text position={[0, 0.5, 0.45]} fontSize={0.3} color="black">
+                {hasPlayer ? score.toString() : "-"}
             </Text>
         </group>
     );
