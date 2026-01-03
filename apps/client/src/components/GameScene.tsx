@@ -79,6 +79,7 @@ export function GameScene() {
                                 label={player.nickname}
                                 chatMessage={chatMsg?.text}
                                 messageTimestamp={chatMsg?.timestamp}
+                                modelPath={player.avatarId}
                             />
                         </group>
                     );

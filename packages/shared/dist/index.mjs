@@ -1,4 +1,8 @@
 // src/types.ts
+var AVATAR_MODELS = [
+  { id: "player.glb", name: "Default Player" },
+  { id: "tralalero.glb", name: "Tralalero" }
+];
 var RoomState = /* @__PURE__ */ ((RoomState2) => {
   RoomState2["LOBBY"] = "LOBBY";
   RoomState2["PRE_ROUND"] = "PRE_ROUND";
@@ -11,6 +15,7 @@ var RoomState = /* @__PURE__ */ ((RoomState2) => {
 // src/index.ts
 var VERSION = "0.0.1";
 export {
+  AVATAR_MODELS,
   RoomState,
   VERSION
 };

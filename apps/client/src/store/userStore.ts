@@ -15,6 +15,7 @@ interface UserState {
     login: (nickname: string, password: string) => Promise<{ success: boolean, error?: string }>;
     logout: () => void;
     connectSocket: () => void;
+    updateProfile: (data: { avatarModel: string }) => Promise<{ success: boolean, error?: string }>;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -96,6 +97,29 @@ export const useUserStore = create<UserState>()(
                 const { socket } = get();
                 if (socket) socket.disconnect();
                 set({ user: null, token: null, socket: null, timeSync: null });
+            },
+
+            updateProfile: async (data) => {
+                try {
+                    const { token } = get();
+                    if (!token) return { success: false, error: "Not logged in" };
+
+                    const res = await fetch(`${API_URL}/api/users/me`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const updatedUser = await res.json();
+                    if (updatedUser.error) return { success: false, error: updatedUser.error };
+
+                    set({ user: updatedUser });
+                    return { success: true };
+                } catch (err) {
+                    return { success: false, error: "Network Error" };
+                }
             },
 
             connectSocket: () => {

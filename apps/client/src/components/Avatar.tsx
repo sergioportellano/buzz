@@ -9,12 +9,14 @@ export function Avatar({
     position = [0, 0, 0],
     label = "",
     chatMessage = "",
-    messageTimestamp = 0
+    messageTimestamp = 0,
+    modelPath = "player.glb"
 }: {
     position?: [number, number, number],
     label?: string,
     chatMessage?: string,
-    messageTimestamp?: number
+    messageTimestamp?: number,
+    modelPath?: string
 }) {
     // Inner ref for animation only
     const animRef = useRef<THREE.Group>(null);
@@ -36,7 +38,7 @@ export function Avatar({
             <group ref={animRef}>
                 <Suspense fallback={null}>
                     <GameAsset
-                        path="/models/player.glb"
+                        path={`/models/${modelPath}`}
                         scale={0.7}
                         position={[0, 0, 0]}
                     />

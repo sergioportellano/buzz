@@ -58,6 +58,29 @@ app.put('/api/admin/users/:id', requireAdmin, async (req, res) => {
     }
 });
 
+// User Self Update
+app.put('/api/users/me', async (req: any, res: any) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "No token" });
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const user = await AuthService.validateToken(token);
+        if (!user) return res.status(401).json({ error: "Invalid Token" });
+
+        // Only allow updating specific fields for self-update
+        const allowedUpdates = {
+            avatarModel: req.body.avatarModel
+            // Add nickname or other fields here if we want to allow user to change them
+        };
+
+        const updatedUser = await UserService.updateUser(user.id, allowedUpdates);
+        res.json(updatedUser);
+    } catch (e: any) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
 // Create Question (with Audio)
 app.post('/api/admin/questions', requireAdmin, upload.single('audio'), async (req: any, res: any) => {
     try {

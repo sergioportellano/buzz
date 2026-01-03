@@ -18,6 +18,7 @@ model User {
   isVerified Boolean @default(false)
   verificationCode String?
   isAdmin        Boolean  @default(false)
+  avatarModel    String   @default("player.glb")
   createdAt DateTime @default(now())
   
   // Future extensions

@@ -2,8 +2,14 @@ interface UserProfile {
     id: string;
     nickname: string;
     isGuest: boolean;
+    isAdmin?: boolean;
     createdAt: number;
+    avatarModel?: string;
 }
+declare const AVATAR_MODELS: {
+    id: string;
+    name: string;
+}[];
 declare enum RoomState {
     LOBBY = "LOBBY",
     PRE_ROUND = "PRE_ROUND",
@@ -20,6 +26,7 @@ interface Player {
     lastAnswer?: string;
     hasAnswered: boolean;
     avatarId: string;
+    slot?: number;
 }
 interface RoomInfo {
     id: string;
@@ -31,6 +38,8 @@ interface RoomInfo {
     totalRounds: number;
     roundStartTime?: number;
     roundDuration?: number;
+    maxPlayers: number;
+    isPrivate: boolean;
 }
 interface GameConfig {
     totalRounds: number;
@@ -59,4 +68,4 @@ interface ClientToServerEvents {
 
 declare const VERSION = "0.0.1";
 
-export { type ChatMessage, type ClientToServerEvents, type GameConfig, type Player, type RoomInfo, RoomState, type ServerToClientEvents, type UserProfile, VERSION };
+export { AVATAR_MODELS, type ChatMessage, type ClientToServerEvents, type GameConfig, type Player, type RoomInfo, RoomState, type ServerToClientEvents, type UserProfile, VERSION };

@@ -4,7 +4,13 @@ export interface UserProfile {
     isGuest: boolean;
     isAdmin?: boolean;
     createdAt: number;
+    avatarModel?: string;
 }
+
+export const AVATAR_MODELS = [
+    { id: 'player.glb', name: 'Default Player' },
+    { id: 'tralalero.glb', name: 'Tralalero' }
+];
 // Core Game Types
 export enum RoomState {
     LOBBY = 'LOBBY',

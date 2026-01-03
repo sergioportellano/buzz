@@ -285,6 +285,36 @@ export function LobbyScreen() {
                     </div>
 
                     <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
+                        <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Selecciona tu Avatar</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            {['player.glb', 'tralalero.glb'].map(model => (
+                                <div
+                                    key={model}
+                                    onClick={() => {
+                                        useUserStore.getState().updateProfile({ avatarModel: model });
+                                    }}
+                                    style={{
+                                        border: user?.avatarModel === model ? '2px solid var(--color-primary)' : '2px solid transparent',
+                                        background: 'rgba(0,0,0,0.3)',
+                                        borderRadius: '8px',
+                                        padding: '1rem',
+                                        cursor: 'pointer',
+                                        textAlign: 'center',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
+                                        {model === 'player.glb' ? '🤖' : '👽'}
+                                    </div>
+                                    <div style={{ fontSize: '0.9rem', color: user?.avatarModel === model ? 'var(--color-primary)' : 'white' }}>
+                                        {model === 'player.glb' ? 'Clásico' : 'Tralalero'}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
                         <h3>Estadísticas</h3>
                         <p style={{ color: '#aaa' }}>Estadísticas próximamente...</p>
                     </div>

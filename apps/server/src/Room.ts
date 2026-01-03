@@ -52,7 +52,7 @@ export class Room {
                 streak: 0,
                 isConnected: true,
                 hasAnswered: false,
-                avatarId: 'default',
+                avatarId: user.avatarModel || 'player.glb',
                 slot: slot
             };
         }

@@ -20,12 +20,17 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
+  AVATAR_MODELS: () => AVATAR_MODELS,
   RoomState: () => RoomState,
   VERSION: () => VERSION
 });
 module.exports = __toCommonJS(index_exports);
 
 // src/types.ts
+var AVATAR_MODELS = [
+  { id: "player.glb", name: "Default Player" },
+  { id: "tralalero.glb", name: "Tralalero" }
+];
 var RoomState = /* @__PURE__ */ ((RoomState2) => {
   RoomState2["LOBBY"] = "LOBBY";
   RoomState2["PRE_ROUND"] = "PRE_ROUND";
@@ -39,6 +44,7 @@ var RoomState = /* @__PURE__ */ ((RoomState2) => {
 var VERSION = "0.0.1";
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  AVATAR_MODELS,
   RoomState,
   VERSION
 });

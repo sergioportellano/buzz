@@ -17,7 +17,7 @@ export class UserService {
         });
     }
 
-    static async updateUser(id: string, data: { nickname?: string; email?: string; isAdmin?: boolean; isVerified?: boolean; password?: string }) {
+    static async updateUser(id: string, data: { nickname?: string; email?: string; isAdmin?: boolean; isVerified?: boolean; password?: string; avatarModel?: string }) {
         return prisma.user.update({
             where: { id },
             data: {
@@ -25,14 +25,16 @@ export class UserService {
                 email: data.email,
                 isAdmin: data.isAdmin,
                 isVerified: data.isVerified,
-                password: data.password // Optionally allow password reset
+                password: data.password, // Optionally allow password reset
+                avatarModel: data.avatarModel
             },
             select: {
                 id: true,
                 nickname: true,
                 email: true,
                 isAdmin: true,
-                isVerified: true
+                isVerified: true,
+                avatarModel: true
             }
         });
     }
