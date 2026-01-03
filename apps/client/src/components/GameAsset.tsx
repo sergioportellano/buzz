@@ -1,5 +1,5 @@
 import { useGLTF, useAnimations } from '@react-three/drei';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 
 interface GameAssetProps {
@@ -26,7 +26,7 @@ export function GameAsset({
     const { actions } = useAnimations(animations, group);
 
     // Cloning scene to allow multiple instances (like avatars)
-    const clone = useRef(scene.clone());
+    const clone = useMemo(() => scene.clone(), [scene]);
 
     useEffect(() => {
         // Simple animation player
@@ -41,7 +41,7 @@ export function GameAsset({
     return (
         <group ref={group} position={position} rotation={rotation} scale={scale} dispose={null}>
             <primitive
-                object={clone.current}
+                object={clone}
                 castShadow={castShadow}
                 receiveShadow={receiveShadow}
                 // Traverse to enable shadows on all child meshes
