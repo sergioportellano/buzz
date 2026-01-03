@@ -69,39 +69,7 @@ export function LobbyScreen() {
 
     return (
         <div className="container" style={{ position: 'relative', zIndex: 1, padding: '2rem' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <h1>BUZZ LOBBY</h1>
-                    <span className="status-badge connected">ONLINE</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
 
-                    {/* Admin Button */}
-                    {user?.isAdmin && (
-                        <button
-                            onClick={() => setView('admin')}
-                            style={{
-                                padding: '0.5rem 1rem',
-                                fontSize: '0.8rem',
-                                background: view === 'admin' ? 'var(--color-primary)' : '#333',
-                                border: '1px solid #555',
-                                color: 'white',
-                                cursor: 'pointer',
-                                marginRight: '1rem'
-                            }}
-                        >
-                            Admin Panel
-                        </button>
-                    )}
-
-                    <h3>{user?.nickname}</h3>
-                    {/* Show logout only in dashboard or profile, or always? Always is fine. */}
-                    {view === 'dashboard' && (
-                        <button onClick={logout} style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', background: '#444' }}>Logout</button>
-                    )}
-                </div>
-            </div>
 
             {/* DASHBOARD VIEW */}
             {view === 'dashboard' && (
@@ -286,6 +254,15 @@ export function LobbyScreen() {
                         <h3>Stats</h3>
                         <p style={{ color: '#aaa' }}>Stats tracking coming soon...</p>
                     </div>
+
+                    {user?.isAdmin && (
+                        <button
+                            onClick={() => setView('admin')}
+                            style={{ width: '100%', background: 'var(--color-primary)', padding: '1rem', marginBottom: '1rem' }}
+                        >
+                            Admin Panel
+                        </button>
+                    )}
 
                     <button onClick={logout} style={{ width: '100%', background: '#d32f2f', padding: '1rem' }}>
                         Log Out
