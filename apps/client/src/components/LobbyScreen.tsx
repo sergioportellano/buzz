@@ -1,15 +1,15 @@
-```typescript
+
 import { useState, useEffect } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useUserStore } from '../store/userStore';
-import { AdminScreen } from './AdminScreen'; // Added AdminScreen import
+import { AdminScreen } from './AdminScreen';
 
 export function LobbyScreen() {
     const { user, logout } = useUserStore();
     const { createRoom, joinRoom, lobby, getLobby, joinError } = useGameStore();
 
     // Navigation State
-    const [view, setView] = useState<'dashboard' | 'browser' | 'create' | 'profile' | 'admin'>('dashboard'); // Added 'admin' to view state
+    const [view, setView] = useState<'dashboard' | 'browser' | 'create' | 'profile' | 'admin'>('dashboard');
 
     // Create Form State
     const [maxPlayers, setMaxPlayers] = useState(4);
@@ -45,16 +45,12 @@ export function LobbyScreen() {
 
     const handleManualJoin = () => {
         if (manualCode.length !== 4) return;
-        // Check if room needs password? 
-        // For simplicity, just try joining. Server will reject if password needed but not provided.
-        // Or we can find the room in the lobby list first.
         const room = lobby.find(r => r.code === manualCode.toUpperCase());
         if (room) {
             handleJoin(room.code, room.isPrivate);
             setShowCodeModal(false);
             setManualCode('');
         } else {
-            // Try blind join (maybe hidden room?)
             joinRoom(manualCode.toUpperCase());
             setShowCodeModal(false);
             setManualCode('');
@@ -80,6 +76,25 @@ export function LobbyScreen() {
                     <span className="status-badge connected">ONLINE</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+
+                    {/* Admin Button */}
+                    {user?.isAdmin && (
+                        <button
+                            onClick={() => setView('admin')}
+                            style={{
+                                padding: '0.5rem 1rem',
+                                fontSize: '0.8rem',
+                                background: view === 'admin' ? 'var(--color-primary)' : '#333',
+                                border: '1px solid #555',
+                                color: 'white',
+                                cursor: 'pointer',
+                                marginRight: '1rem'
+                            }}
+                        >
+                            Admin Panel
+                        </button>
+                    )}
+
                     <h3>{user?.nickname}</h3>
                     {/* Show logout only in dashboard or profile, or always? Always is fine. */}
                     {view === 'dashboard' && (
@@ -154,9 +169,6 @@ export function LobbyScreen() {
                                     <tr key={r.id} style={{ borderBottom: '1px solid #333' }}>
                                         <td style={{ padding: '0.8rem 0.5rem', fontWeight: 'bold' }}>{r.code}</td>
                                         <td style={{ padding: '0.8rem 0.5rem', fontSize: '0.9rem', color: '#ccc' }}>Room #{r.id.substring(0, 4)}</td>
-                                        {/* Ideally Host name, but we only have hostId in RoomInfo based on previous steps? Let's check type. 
-                                            Actually GameManager sends hostId. We don't have host nickname in Lobby info yet. 
-                                            Just show ID or nothing for now. */}
                                         <td style={{ padding: '0.8rem 0.5rem' }}>{r.playerCount} / {r.maxPlayers}</td>
                                         <td style={{ padding: '0.8rem 0.5rem' }}>
                                             {r.isPrivate ? <span style={{ color: 'gold' }}>🔒 Private</span> : <span style={{ color: 'lime' }}>Open</span>}
@@ -269,6 +281,13 @@ export function LobbyScreen() {
                 </div>
             )}
 
+            {/* ADMIN VIEW */}
+            {view === 'admin' && (
+                <div className="card" style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+                    <AdminScreen onBack={() => setView('dashboard')} />
+                </div>
+            )}
+
             {/* MODALS */}
 
             {/* Join Private Password Modal */}
@@ -341,3 +360,4 @@ export function LobbyScreen() {
         </div>
     );
 }
+
