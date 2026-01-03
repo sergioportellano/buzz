@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Html, Text } from '@react-three/drei';
 
@@ -28,13 +27,7 @@ export function Avatar({
             return () => clearTimeout(timer);
         }
     }, [chatMessage, messageTimestamp]);
-
-    useFrame((state) => {
-        if (animRef.current) {
-            // Animate ONLY the inner group's Y position relative to parent
-            animRef.current.position.y = Math.sin(state.clock.elapsedTime * 2) * 0.1;
-        }
-    });
+    // Animation removed as per request
 
     return (
         // Outer Group: Handles Placement (props)
