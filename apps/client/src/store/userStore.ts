@@ -121,6 +121,10 @@ export const useUserStore = create<UserState>()(
                     const { socket } = get();
                     if (socket) {
                         socket.disconnect();
+                        set({ socket: null }); // CLEAR SOCKET STATE so connectSocket() can run
+                        // Give a tiny tick for state to update or just run it
+                        setTimeout(() => get().connectSocket(), 100);
+                    } else {
                         get().connectSocket();
                     }
 
