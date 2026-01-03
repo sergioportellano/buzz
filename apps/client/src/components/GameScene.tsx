@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
 import { Stage } from './Stage';
@@ -6,44 +6,50 @@ import { Avatar } from './Avatar';
 import { useGameStore } from '../store/gameStore';
 import * as THREE from 'three';
 
-function CameraIntro({ onFinish }: { onFinish: () => void }) {
+function CameraController({ inGame, onFinishIntro }: { inGame: boolean, onFinishIntro: (finished: boolean) => void }) {
     const { camera } = useThree();
-    const targetPos = new THREE.Vector3(0, 5, 12);
-    const startPos = new THREE.Vector3(0, 20, 50);
+    const gamePos = new THREE.Vector3(0, 5, 12);
+    const lobbyPos = new THREE.Vector3(0, 20, 50);
 
-    useEffect(() => {
-        // Force start position
-        camera.position.copy(startPos);
-        camera.lookAt(0, 0, 0);
-    }, [camera]);
+    // Determines target generic position based on state
+    const targetVector = inGame ? gamePos : lobbyPos;
 
     useFrame((_state, delta) => {
         // Clamp delta to prevent jumps
         const d = Math.min(delta, 0.1);
 
-        // Smooth lerp to target
-        camera.position.lerp(targetPos, d * 2.0);
+        // Smoothly interpolate current position to target
+        camera.position.lerp(targetVector, d * 2.0);
         camera.lookAt(0, 0, 0);
 
-        if (camera.position.distanceTo(targetPos) < 0.5) {
-            camera.position.copy(targetPos);
-            camera.lookAt(0, 0, 0);
-            onFinish();
+        // Check if we are "close enough" to the target to consider the transition done
+        const dist = camera.position.distanceTo(targetVector);
+
+        // If we are aiming for Game View and are close, enable controls
+        if (inGame && dist < 0.5) {
+            onFinishIntro(true);
+        } else if (!inGame) {
+            // If strictly back to lobby, ensure controls are off
+            onFinishIntro(false);
         }
     });
+
     return null;
 }
 
 export function GameScene() {
     const { room } = useGameStore();
-    const [introFinished, setIntroFinished] = useState(false);
+    const [controlsEnabled, setControlsEnabled] = useState(false);
 
     return (
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }}>
             <Canvas shadows>
                 <PerspectiveCamera makeDefault fov={50} />
 
-                {!introFinished && <CameraIntro onFinish={() => setIntroFinished(true)} />}
+                <CameraController
+                    inGame={!!room}
+                    onFinishIntro={setControlsEnabled}
+                />
 
                 {/* Lighting */}
                 <ambientLight intensity={0.4} />
@@ -81,7 +87,7 @@ export function GameScene() {
                 <OrbitControls
                     minPolarAngle={0}
                     maxPolarAngle={Math.PI / 2}
-                    enabled={introFinished} // Disable controls during intro
+                    enabled={controlsEnabled}
                 />
             </Canvas>
         </div>
