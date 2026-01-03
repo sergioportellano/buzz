@@ -287,30 +287,41 @@ export function LobbyScreen() {
                     <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
                         <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Selecciona tu Avatar</h3>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                            {['player.glb', 'tralalero.glb'].map(model => (
-                                <div
-                                    key={model}
-                                    onClick={() => {
-                                        useUserStore.getState().updateProfile({ avatarModel: model });
-                                    }}
-                                    style={{
-                                        border: user?.avatarModel === model ? '2px solid var(--color-primary)' : '2px solid transparent',
-                                        background: 'rgba(0,0,0,0.3)',
-                                        borderRadius: '8px',
-                                        padding: '1rem',
-                                        cursor: 'pointer',
-                                        textAlign: 'center',
-                                        transition: 'all 0.2s'
-                                    }}
-                                >
-                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-                                        {model === 'player.glb' ? '🤖' : '👽'}
+                            {['player.glb', 'tralalero.glb'].map(model => {
+                                const currentAvatar = user?.avatarModel || 'player.glb';
+                                const isActive = currentAvatar === model;
+
+                                return (
+                                    <div
+                                        key={model}
+                                        onClick={() => {
+                                            // Optimistic update could be handled here or just wait for server
+                                            // We'll trust the store update for now but make the UI clearer
+                                            useUserStore.getState().updateProfile({ avatarModel: model });
+                                        }}
+                                        style={{
+                                            border: isActive ? '2px solid var(--color-primary)' : '2px solid transparent',
+                                            background: isActive ? 'rgba(var(--color-primary-rgb), 0.2)' : 'rgba(0,0,0,0.3)', // Needs RGB var or just use hex opacity
+                                            backgroundColor: isActive ? '#1a3a2a' : 'rgba(0,0,0,0.3)', // Fallback dark green for active
+                                            borderRadius: '8px',
+                                            padding: '1rem',
+                                            cursor: 'pointer',
+                                            textAlign: 'center',
+                                            transition: 'all 0.2s',
+                                            transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                                            boxShadow: isActive ? '0 0 15px rgba(0, 255, 0, 0.2)' : 'none'
+                                        }}
+                                    >
+                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
+                                            {model === 'player.glb' ? '🤖' : '👽'}
+                                        </div>
+                                        <div style={{ fontSize: '0.9rem', fontWeight: isActive ? 'bold' : 'normal', color: isActive ? 'var(--color-primary)' : 'white' }}>
+                                            {model === 'player.glb' ? 'Clásico' : 'Tralalero'}
+                                            {isActive && ' (Seleccionado)'}
+                                        </div>
                                     </div>
-                                    <div style={{ fontSize: '0.9rem', color: user?.avatarModel === model ? 'var(--color-primary)' : 'white' }}>
-                                        {model === 'player.glb' ? 'Clásico' : 'Tralalero'}
-                                    </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                     </div>
 
