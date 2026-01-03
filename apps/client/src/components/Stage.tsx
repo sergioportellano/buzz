@@ -23,7 +23,7 @@ export function Stage({ podiums = 4, players = [] }: { podiums?: number, players
                 // Use nickname if available, else empty or label? User asked for POINTS.
                 // "un letrero con los puntos"
 
-                return <Podium key={i} position={[xLin, 0, 1]} score={score} hasPlayer={!!player} />
+                return <Podium key={i} position={[xLin, 0.5, 1]} score={score} hasPlayer={!!player} />
             })}
         </group>
     );
@@ -34,20 +34,24 @@ function Podium({ position, score, hasPlayer }: { position: [number, number, num
     return (
         <group position={position}>
             {/* Base - Procedural Cylinder */}
-            <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
-                <cylinderGeometry args={[0.4, 0.4, 1, 32]} />
+            {/* Base - Procedural Cylinder */}
+            <mesh position={[0, 0.4, 0]} castShadow receiveShadow>
+                <cylinderGeometry args={[0.4, 0.4, 0.8, 32]} />
                 <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
             </mesh>
 
             {/* Light Strip */}
-            <mesh position={[0, 0.5, 0.41]}>
-                <planeGeometry args={[0.2, 0.8]} />
+            {/* Light Strip */}
+            <mesh position={[0, 0.4, 0.41]}>
+                <planeGeometry args={[0.2, 0.6]} />
                 <meshBasicMaterial color={hasPlayer ? "cyan" : "gray"} toneMapped={false} />
             </mesh>
 
             {/* Score Label (only if player exists? or always show 0?) */}
             {/* User asked for "letrero con los puntos" */}
-            <Text position={[0, 0.5, 0.45]} fontSize={0.3} color="black">
+            {/* Score Label (only if player exists? or always show 0?) */}
+            {/* User asked for "letrero con los puntos" */}
+            <Text position={[0, 0.4, 0.45]} fontSize={0.3} color="black">
                 {hasPlayer ? score.toString() : "-"}
             </Text>
         </group>
