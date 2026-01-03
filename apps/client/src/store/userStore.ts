@@ -114,6 +114,14 @@ export const useUserStore = create<UserState>()(
                     });
                 });
 
+                newSocket.on('connect_error', (err) => {
+                    console.error('Socket Connection Error:', err.message);
+                    if (err.message === "Authentication Error" || err.message === "xhr poll error") {
+                        console.warn("Auth failed or connection lost, logging out...");
+                        get().logout();
+                    }
+                });
+
                 set({ socket: newSocket });
             }
         }),
