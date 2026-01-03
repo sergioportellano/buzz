@@ -37,26 +37,47 @@ export function Stage({ podiums = 4, players = [] }: { podiums?: number, players
 function Podium({ position, score, hasPlayer }: { position: [number, number, number], score: number, hasPlayer: boolean }) {
     return (
         <group position={position}>
-            {/* Base - Procedural Cylinder */}
-            {/* Base - Procedural Cylinder */}
+            {/* Main Column (Wood) */}
             <mesh position={[0, 0.4, 0]} castShadow receiveShadow>
-                <cylinderGeometry args={[0.4, 0.4, 0.8, 32]} />
-                <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
+                <boxGeometry args={[0.5, 0.8, 0.5]} />
+                <meshStandardMaterial color="#5D4037" roughness={0.8} />
             </mesh>
 
-            {/* Light Strip */}
-            {/* Light Strip */}
-            <mesh position={[0, 0.4, 0.41]}>
-                <planeGeometry args={[0.2, 0.6]} />
-                <meshBasicMaterial color={hasPlayer ? "cyan" : "gray"} toneMapped={false} />
+            {/* Base Step */}
+            <mesh position={[0, 0.025, 0]} castShadow receiveShadow>
+                <boxGeometry args={[0.6, 0.05, 0.6]} />
+                <meshStandardMaterial color="#4E342E" roughness={0.8} />
             </mesh>
 
-            {/* Score Label (only if player exists? or always show 0?) */}
-            {/* User asked for "letrero con los puntos" */}
-            {/* Score Label (only if player exists? or always show 0?) */}
-            {/* User asked for "letrero con los puntos" */}
-            <Text position={[0, 0.4, 0.45]} fontSize={0.3} color="black">
-                {hasPlayer ? score.toString() : "-"}
+            {/* Top Cap */}
+            <mesh position={[0, 0.825, 0]} castShadow receiveShadow>
+                <boxGeometry args={[0.6, 0.05, 0.6]} />
+                <meshStandardMaterial color="#4E342E" roughness={0.8} />
+            </mesh>
+
+            {/* Buzzer Base (Silver Ring) */}
+            <mesh position={[0, 0.86, 0]} castShadow>
+                <cylinderGeometry args={[0.2, 0.2, 0.02, 32]} />
+                <meshStandardMaterial color="#C0C0C0" metalness={0.8} roughness={0.2} />
+            </mesh>
+
+            {/* Buzzer Button (Red) */}
+            <mesh position={[0, 0.9, 0]} castShadow>
+                <cylinderGeometry args={[0.15, 0.18, 0.1, 32]} />
+                <meshStandardMaterial color="red" roughness={0.4} />
+            </mesh>
+
+            {/* Score Text - Front of column */}
+            <Text
+                position={[0, 0.6, 0.26]}
+                fontSize={0.2}
+                color="white"
+                anchorX="center"
+                anchorY="middle"
+                outlineWidth={0.02}
+                outlineColor="#3E2723"
+            >
+                {hasPlayer ? score.toString() : ""}
             </Text>
         </group>
     );
