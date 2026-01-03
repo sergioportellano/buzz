@@ -26,7 +26,7 @@ export function Avatar({ position = [0, 0, 0], label = "" }: { position?: [numbe
                 <Suspense fallback={null}>
                     <GameAsset
                         path="/models/player.glb"
-                        scale={1.4}
+                        scale={0.7}
                         position={[0, 0, 0]}
                     />
                 </Suspense>

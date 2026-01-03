@@ -29,20 +29,17 @@ export function Stage({ podiums = 4 }) {
 function Podium({ position, label }: { position: [number, number, number], label: string }) {
     return (
         <group position={position}>
-            {/* Base */}
-            <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
-                <cylinderGeometry args={[0.4, 0.4, 1, 32]} />
-                <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
-            </mesh>
-
-            {/* Light Strip */}
-            <mesh position={[0, 0.5, 0.41]}>
-                <planeGeometry args={[0.2, 0.8]} />
-                <meshBasicMaterial color="cyan" toneMapped={false} />
-            </mesh>
+            {/* Imported Podium Model */}
+            <Suspense fallback={null}>
+                <GameAsset
+                    path="/models/podio.glb"
+                    scale={1.5}
+                    position={[0, 0, 0]}
+                />
+            </Suspense>
 
             {/* Text Label */}
-            <Text position={[0, 1, 1.1]} fontSize={0.5} color="black">
+            <Text position={[0, 1.2, 0]} fontSize={0.4} color="black" anchorX="center">
                 {label}
             </Text>
         </group>
