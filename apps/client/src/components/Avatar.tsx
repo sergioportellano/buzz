@@ -58,7 +58,7 @@ export function Avatar({
 
             {/* Chat Bubble - Lower position, responsive font */}
             {showBubble && chatMessage && (
-                <Html position={[0, 2.7, 0]} center>
+                <Html position={[0, 2.1, 0]} center>
                     <div style={{
                         background: 'white',
                         padding: '0.5rem 0.8rem',
