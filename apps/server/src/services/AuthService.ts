@@ -11,6 +11,42 @@ export class AuthService {
             // Generate 6-digit code
             const code = Math.floor(100000 + Math.random() * 900000).toString();
 
+            // Check if nickname exists to handle "Legacy Zombie" accounts
+            const existingUser = await prisma.user.findUnique({ where: { nickname } });
+
+            if (existingUser) {
+                // If user exists but is NOT verified and has the default/temp email, treat as a "Claim"
+                // Or if just not verified, maybe we allow re-registering? 
+                // Let's be specific to the "temp@temp.com" case or null email if that was possible, 
+                // but schema says default "temp@temp.com".
+                // Actually, if simply !isVerified, we might want to allow re-sending or overwritting.
+                // Let's stick to the specific "Legacy" case to avoid security issues (overwriting someone else's unverified pending account)
+                // But for this prototype, if you have the nickname and it's not verified, let's assume it's abandoned or yours.
+
+                const isLegacy = existingUser.email === 'temp@temp.com';
+
+                if (isLegacy || !existingUser.isVerified) {
+                    // Update the existing user
+                    await prisma.user.update({
+                        where: { id: existingUser.id },
+                        data: {
+                            password, // Update password
+                            email,    // Update email
+                            verificationCode: code,
+                            isVerified: false // Ensure it's false until they verify
+                        }
+                    });
+
+                    // Send Verification Email
+                    await EmailService.sendVerificationEmail(email, code);
+                    return { requiresVerification: true };
+                }
+
+                // If verified, then it's a real duplicate
+                return { error: "Nickname already taken" };
+            }
+
+            // Create new user if not exists
             const user = await prisma.user.create({
                 data: {
                     nickname,
