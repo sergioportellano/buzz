@@ -1,16 +1,38 @@
-import { Canvas } from '@react-three/fiber';
+import { useRef, useState, useEffect } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
 import { Stage } from './Stage';
 import { Avatar } from './Avatar';
 import { useGameStore } from '../store/gameStore';
+import * as THREE from 'three';
+
+function CameraIntro({ onFinish }: { onFinish: () => void }) {
+    const { camera } = useThree();
+    const targetPos = new THREE.Vector3(0, 5, 12);
+
+    useFrame((state, delta) => {
+        // Smooth lerp to target
+        camera.position.lerp(targetPos, delta * 1.5); // Adjust speed here
+        camera.lookAt(0, 0, 0); // Keep looking at center
+
+        if (camera.position.distanceTo(targetPos) < 0.1) {
+            onFinish();
+        }
+    });
+    return null;
+}
 
 export function GameScene() {
     const { room } = useGameStore();
+    const [introFinished, setIntroFinished] = useState(false);
 
     return (
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }}>
             <Canvas shadows>
-                <PerspectiveCamera makeDefault position={[0, 5, 12]} fov={50} />
+                {/* Initial position logic handled by CameraIntro if active, else default */}
+                <PerspectiveCamera makeDefault position={introFinished ? [0, 5, 12] : [0, 20, 50]} fov={50} />
+
+                {!introFinished && <CameraIntro onFinish={() => setIntroFinished(true)} />}
 
                 {/* Lighting */}
                 <ambientLight intensity={0.4} />
@@ -45,7 +67,11 @@ export function GameScene() {
                     );
                 })}
 
-                <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
+                <OrbitControls
+                    minPolarAngle={0}
+                    maxPolarAngle={Math.PI / 2}
+                    enabled={introFinished} // Disable controls during intro
+                />
             </Canvas>
         </div>
     );
