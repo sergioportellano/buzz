@@ -78,6 +78,7 @@ export function GameScene() {
                     if (player.avatarId === 'tralalero.glb') zOffset = -1.5;
 
                     const labelH = player.avatarId === 'tralalero.glb' ? 1.6 : 2.4;
+                    const scale = player.avatarId === 'capuchino.glb' ? 0.4 : 0.7; // Request: 40% (interpreted as 0.4 scale vs default 0.7)
 
                     return (
                         <group key={playerId} rotation={[0, 5 * (Math.PI / 180), 0]}>
@@ -88,6 +89,7 @@ export function GameScene() {
                                 messageTimestamp={chatMsg?.timestamp}
                                 modelPath={player.avatarId}
                                 labelHeight={labelH}
+                                scale={scale}
                             />
                         </group>
                     );
