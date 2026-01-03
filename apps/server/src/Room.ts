@@ -37,6 +37,8 @@ export class Room {
         if (this.players[user.id]) {
             // Reconnection logic
             this.players[user.id].isConnected = true;
+            this.players[user.id].avatarId = user.avatarModel || 'player.glb';
+            this.players[user.id].nickname = user.nickname; // Sync nickname too
         } else {
             // Assign Slot
             let slot = 0;

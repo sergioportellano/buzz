@@ -97,7 +97,8 @@ export class AuthService {
                     nickname: updatedUser.nickname,
                     isGuest: false,
                     isAdmin: updatedUser.isAdmin,
-                    createdAt: updatedUser.createdAt.getTime()
+                    createdAt: updatedUser.createdAt.getTime(),
+                    avatarModel: updatedUser.avatarModel
                 },
                 token: updatedUser.id
             };
@@ -128,7 +129,8 @@ export class AuthService {
                     nickname: user.nickname,
                     isGuest: false,
                     isAdmin: user.isAdmin,
-                    createdAt: user.createdAt.getTime()
+                    createdAt: user.createdAt.getTime(),
+                    avatarModel: user.avatarModel
                 },
                 token: user.id
             };
@@ -167,7 +169,8 @@ export class AuthService {
                 nickname: user.nickname,
                 isGuest: false,
                 isAdmin: user.isAdmin,
-                createdAt: user.createdAt.getTime()
+                createdAt: user.createdAt.getTime(),
+                avatarModel: user.avatarModel
             };
         }
         return null;

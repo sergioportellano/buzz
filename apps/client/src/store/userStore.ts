@@ -116,6 +116,14 @@ export const useUserStore = create<UserState>()(
                     if (updatedUser.error) return { success: false, error: updatedUser.error };
 
                     set({ user: updatedUser });
+
+                    // Force socket reconnect to update session user data on server
+                    const { socket } = get();
+                    if (socket) {
+                        socket.disconnect();
+                        get().connectSocket();
+                    }
+
                     return { success: true };
                 } catch (err) {
                     return { success: false, error: "Network Error" };
