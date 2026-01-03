@@ -24,11 +24,15 @@ export function LobbyScreen() {
     const [manualCode, setManualCode] = useState('');
     const [showCodeModal, setShowCodeModal] = useState(false);
 
+    const { socket } = useUserStore(); // Get socket to trigger fetch when ready
+
     useEffect(() => {
-        getLobby();
+        if (socket) {
+            getLobby();
+        }
         const interval = setInterval(getLobby, 5000);
         return () => clearInterval(interval);
-    }, []);
+    }, [socket]);
 
     const handleCreate = () => {
         createRoom({ maxPlayers, password: isPrivate ? password : undefined });
