@@ -23,6 +23,7 @@ export interface Player {
     lastAnswer?: string;
     hasAnswered: boolean;
     avatarId: string;
+    slot?: number;
 }
 
 export interface RoomInfo {

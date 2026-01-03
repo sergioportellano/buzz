@@ -19,6 +19,7 @@ export class Room {
 
     maxPlayers: number;
     password?: string;
+    availableSlots: number[] = [];
 
     constructor(io: Server, hostId: string, code: string, maxPlayers: number = 4, password?: string) {
         this.io = io;
@@ -27,6 +28,9 @@ export class Room {
         this.code = code;
         this.maxPlayers = maxPlayers;
         this.password = password;
+
+        // Initialize slots
+        this.availableSlots = Array.from({ length: maxPlayers }, (_, i) => i);
     }
 
     addPlayer(user: UserProfile) {
@@ -34,6 +38,13 @@ export class Room {
             // Reconnection logic
             this.players[user.id].isConnected = true;
         } else {
+            // Assign Slot
+            let slot = 0;
+            if (this.availableSlots.length > 0) {
+                this.availableSlots.sort((a, b) => a - b);
+                slot = this.availableSlots.shift()!;
+            }
+
             this.players[user.id] = {
                 id: user.id,
                 nickname: user.nickname,
@@ -41,7 +52,8 @@ export class Room {
                 streak: 0,
                 isConnected: true,
                 hasAnswered: false,
-                avatarId: 'default'
+                avatarId: 'default',
+                slot: slot
             };
         }
         this.broadcastState();
@@ -49,9 +61,16 @@ export class Room {
 
     removePlayer(userId: string) {
         if (this.players[userId]) {
-            this.players[userId].isConnected = false;
-            // Optional: Remove completely if in Lobby?
-            // For now, just mark disconected
+            // Return slot to pool
+            const slot = this.players[userId].slot;
+            if (slot !== undefined) {
+                this.availableSlots.push(slot);
+                this.availableSlots.sort((a, b) => a - b);
+            }
+
+            // Delete player to free up the spot completely
+            delete this.players[userId];
+
             this.broadcastState();
         }
     }
