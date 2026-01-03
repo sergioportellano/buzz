@@ -36,6 +36,12 @@ interface GameConfig {
     totalRounds: number;
     roundDuration: number;
 }
+interface ChatMessage {
+    id: string;
+    senderId: string;
+    text: string;
+    timestamp: number;
+}
 
 interface ServerToClientEvents {
     pong: (timestamp: number) => void;
@@ -53,4 +59,4 @@ interface ClientToServerEvents {
 
 declare const VERSION = "0.0.1";
 
-export { type ClientToServerEvents, type GameConfig, type Player, type RoomInfo, RoomState, type ServerToClientEvents, type UserProfile, VERSION };
+export { type ChatMessage, type ClientToServerEvents, type GameConfig, type Player, type RoomInfo, RoomState, type ServerToClientEvents, type UserProfile, VERSION };

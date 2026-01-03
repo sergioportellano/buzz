@@ -72,5 +72,8 @@ class Room {
     broadcastState() {
         this.io.to(this.id).emit('state_update', this.toJSON());
     }
+    broadcastChat(message) {
+        this.io.to(this.id).emit('chat_broadcast', message);
+    }
 }
 exports.Room = Room;

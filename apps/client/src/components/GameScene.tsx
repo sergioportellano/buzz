@@ -3,6 +3,7 @@ import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
 import { Stage } from './Stage';
 import { Avatar } from './Avatar';
 import { useGameStore } from '../store/gameStore';
+import { ChatInput } from './ChatInput';
 
 export function GameScene() {
     const { room } = useGameStore();
@@ -26,6 +27,7 @@ export function GameScene() {
                 {/* Players */}
                 {room && Object.keys(room.players).sort().map((playerId, index) => {
                     const player = room.players[playerId];
+                    const chatMsg = useGameStore.getState().chatMessages[playerId];
                     // Position players on podiums. Simple math for now matching the Stage logic
                     const x = (index - (4 - 1) / 2) * 1.5;
                     return (
@@ -33,12 +35,15 @@ export function GameScene() {
                             key={playerId}
                             position={[x, -1.5, 0]}
                             label={`${player.nickname} (${index})`}
+                            chatMessage={chatMsg?.text}
+                            messageTimestamp={chatMsg?.timestamp}
                         />
                     );
                 })}
 
                 <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
             </Canvas>
+            <ChatInput />
         </div>
     );
 }

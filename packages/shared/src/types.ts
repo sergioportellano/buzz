@@ -40,3 +40,10 @@ export interface GameConfig {
     totalRounds: number;
     roundDuration: number;
 }
+
+export interface ChatMessage {
+    id: string;
+    senderId: string;
+    text: string;
+    timestamp: number;
+}

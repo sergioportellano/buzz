@@ -83,4 +83,8 @@ export class Room {
     broadcastState() {
         this.io.to(this.id).emit('state_update', this.toJSON());
     }
+
+    broadcastChat(message: any) {
+        this.io.to(this.id).emit('chat_broadcast', message);
+    }
 }

@@ -58,6 +58,18 @@ export class GameManager {
             room.removePlayer(user.id);
         });
 
+        socket.on('chat_message', (text: string) => {
+            if (room.players[user.id]) { // Validate member
+                const message = {
+                    id: Date.now().toString(), // Simple ID
+                    senderId: user.id,
+                    text: text.substring(0, 100), // Limit length
+                    timestamp: Date.now()
+                };
+                room.broadcastChat(message);
+            }
+        });
+
         // Send initial join success
         socket.emit('room_joined', room.toJSON());
     }

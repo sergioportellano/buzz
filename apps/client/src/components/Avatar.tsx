@@ -1,15 +1,33 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { Html, Text } from '@react-three/drei';
 
 import { GameAsset } from './GameAsset';
 import { Suspense } from 'react';
 
-import { Text } from '@react-three/drei';
-
-export function Avatar({ position = [0, 0, 0], label = "" }: { position?: [number, number, number], label?: string }) {
+export function Avatar({
+    position = [0, 0, 0],
+    label = "",
+    chatMessage = "",
+    messageTimestamp = 0
+}: {
+    position?: [number, number, number],
+    label?: string,
+    chatMessage?: string,
+    messageTimestamp?: number
+}) {
     // Inner ref for animation only
     const animRef = useRef<THREE.Group>(null);
+    const [showBubble, setShowBubble] = useState(false);
+
+    useEffect(() => {
+        if (chatMessage) {
+            setShowBubble(true);
+            const timer = setTimeout(() => setShowBubble(false), 5000); // Hide after 5s
+            return () => clearTimeout(timer);
+        }
+    }, [chatMessage, messageTimestamp]);
 
     useFrame((state) => {
         if (animRef.current) {
@@ -31,14 +49,51 @@ export function Avatar({ position = [0, 0, 0], label = "" }: { position?: [numbe
                     />
                 </Suspense>
             </group>
-            {/* Debug Label */}
-            <mesh position={[0, 2.5, 0]}>
-                <sphereGeometry args={[0.2]} />
-                <meshBasicMaterial color="red" />
-            </mesh>
+
+            {/* Name Label */}
             <Text position={[0, 2.8, 0]} fontSize={0.5} color="white" anchorX="center" anchorY="bottom">
                 {label}
             </Text>
+
+            {/* Chat Bubble */}
+            {showBubble && chatMessage && (
+                <Html position={[0, 3.5, 0]} center>
+                    <div style={{
+                        background: 'white',
+                        padding: '10px 15px',
+                        borderRadius: '15px',
+                        border: '2px solid black',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        color: 'black',
+                        whiteSpace: 'nowrap',
+                        pointerEvents: 'none',
+                        boxShadow: '2px 2px 5px rgba(0,0,0,0.3)',
+                        position: 'relative'
+                    }}>
+                        {chatMessage}
+                        {/* Little triangle for speech bubble tail */}
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-10px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            borderLeft: '10px solid transparent',
+                            borderRight: '10px solid transparent',
+                            borderTop: '10px solid black'
+                        }} />
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-7px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            borderLeft: '8px solid transparent',
+                            borderRight: '8px solid transparent',
+                            borderTop: '8px solid white'
+                        }} />
+                    </div>
+                </Html>
+            )}
         </group>
     );
 }

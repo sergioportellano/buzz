@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { RoomInfo } from '@buzz/shared';
+import type { RoomInfo, ChatMessage } from '@buzz/shared';
 import { useUserStore } from './userStore';
 
 interface GameState {
@@ -15,6 +15,14 @@ interface GameState {
     // Handlers (Internally called by Socket)
     setRoom: (room: RoomInfo) => void;
     setError: (msg: string) => void;
+
+    // Chat
+    chatMessages: Record<string, ChatMessage>; // Map by SenderID (Last message) or Array? 
+    // Using Map by SenderID to easily show "Speech Bubble" per player. 
+    // If we wanted a history log, we'd use an Array. 
+    // Start with Map for "Bubble Only" requirement simplicity.
+    addChatMessage: (msg: ChatMessage) => void;
+    sendChatMessage: (text: string) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -48,6 +56,15 @@ export const useGameStore = create<GameState>((set) => ({
 
     setRoom: (room) => set({ room }),
     setError: (msg) => set({ joinError: msg }),
+
+    chatMessages: {},
+    addChatMessage: (msg) => set((state) => ({
+        chatMessages: { ...state.chatMessages, [msg.senderId]: msg }
+    })),
+    sendChatMessage: (text) => {
+        const socket = useUserStore.getState().socket;
+        if (socket) socket.emit('chat_message', text);
+    }
 }));
 
 // Initialize Socket Listeners for Game Events
@@ -76,6 +93,10 @@ export const initGameListeners = () => {
         socket.on('state_update', (room) => {
             // console.log('State Update:', room.state);
             useGameStore.getState().setRoom(room);
+        });
+
+        socket.on('chat_broadcast', (msg) => {
+            useGameStore.getState().addChatMessage(msg);
         });
     });
 };

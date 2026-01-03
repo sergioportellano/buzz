@@ -45,7 +45,7 @@ io.on('connection', (socket) => {
         console.log(`User disconnected: ${user.nickname}`);
     });
 });
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
     console.log(`Server v${shared_1.VERSION} running on port ${PORT}`);
 });
