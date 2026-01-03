@@ -1,20 +1,41 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars } from '@react-three/drei';
+import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
+import { Stage } from './Stage';
+import { Avatar } from './Avatar';
+import { useGameStore } from '../store/gameStore';
 
 export function GameScene() {
+    const { room } = useGameStore();
+
     return (
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }}>
-            <Canvas camera={{ position: [0, 5, 10], fov: 50 }}>
-                <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} />
-                <Stars />
-                <gridHelper args={[20, 20, 0xff0000, 0x444444]} />
-                <OrbitControls />
-                {/* Placeholder Cube to verify 3D is working */}
-                <mesh position={[0, 1, 0]}>
-                    <boxGeometry />
-                    <meshStandardMaterial color="#8800ff" />
-                </mesh>
+            <Canvas shadows>
+                <PerspectiveCamera makeDefault position={[0, 5, 12]} fov={50} />
+
+                {/* Lighting */}
+                <ambientLight intensity={0.4} />
+                <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
+                <pointLight position={[-10, -10, -10]} intensity={0.5} />
+
+                {/* Environment */}
+                <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+
+                <Stage podiums={4} />
+
+                {/* Players */}
+                {room && Object.values(room.players).map((player, index) => {
+                    // Position players on podiums. Simple math for now matching the Stage logic
+                    const x = (index - (4 - 1) / 2) * 3;
+                    return (
+                        <Avatar
+                            key={player.id}
+                            position={[x, 2, -2]}
+                            color={player.id === room.hostId ? 'gold' : 'hotpink'}
+                        />
+                    );
+                })}
+
+                <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
             </Canvas>
         </div>
     );
