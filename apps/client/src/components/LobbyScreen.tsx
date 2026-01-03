@@ -290,7 +290,8 @@ export function LobbyScreen() {
                             {[
                                 { id: 'player.glb', name: 'Clásico', icon: '🤖' },
                                 { id: 'tralalero.glb', name: 'Tralalero', icon: '👽' },
-                                { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur', icon: '👺' }
+                                { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur', icon: '👺' },
+                                { id: 'capuchino.glb', name: 'Cappuccino Assassino', icon: '☕' }
                             ].map(avatar => {
                                 const currentAvatar = user?.avatarModel || 'player.glb';
                                 const isActive = currentAvatar === avatar.id;

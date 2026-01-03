@@ -8,8 +8,10 @@ export interface UserProfile {
 }
 
 export const AVATAR_MODELS = [
-    { id: 'player.glb', name: 'Default Player' },
-    { id: 'tralalero.glb', name: 'Tralalero' }
+    { id: 'player.glb', name: 'Clásico' },
+    { id: 'tralalero.glb', name: 'Tralalero' },
+    { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur' },
+    { id: 'capuchino.glb', name: 'Cappuccino Assassino' }
 ];
 // Core Game Types
 export enum RoomState {

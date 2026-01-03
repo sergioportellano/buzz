@@ -76,7 +76,6 @@ export function GameScene() {
                     // Specific offset for Tralalero model which seems to be centered differently
                     let zOffset = 0;
                     if (player.avatarId === 'tralalero.glb') zOffset = -1.5;
-                    if (player.avatarId === 'tuntunsahur.glb') zOffset = 0.5; // Closer to podium
 
                     const labelH = player.avatarId === 'tralalero.glb' ? 1.6 : 2.4;
 
