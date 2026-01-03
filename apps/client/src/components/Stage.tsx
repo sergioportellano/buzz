@@ -25,7 +25,7 @@ export function Stage({ podiums = 4, players = [] }: { podiums?: number, players
 
                 return (
                     <group key={i} rotation={[0, 5 * (Math.PI / 180), 0]}>
-                        <Podium position={[xLin, 0.5, 1]} score={score} hasPlayer={!!player} />
+                        <Podium position={[xLin, 0.5, 1]} score={score} hasPlayer={!!player} scale={1.1} />
                     </group>
                 );
             })}
@@ -34,9 +34,9 @@ export function Stage({ podiums = 4, players = [] }: { podiums?: number, players
 }
 
 
-function Podium({ position, score, hasPlayer }: { position: [number, number, number], score: number, hasPlayer: boolean }) {
+function Podium({ position, score, hasPlayer, scale = 1 }: { position: [number, number, number], score: number, hasPlayer: boolean, scale?: number | [number, number, number] }) {
     return (
-        <group position={position}>
+        <group position={position} scale={scale}>
             {/* Main Column (Wood) */}
             <mesh position={[0, 0.4, 0]} castShadow receiveShadow>
                 <boxGeometry args={[0.5, 0.8, 0.5]} />
