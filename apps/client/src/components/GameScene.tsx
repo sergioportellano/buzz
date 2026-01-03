@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
 import { Stage } from './Stage';
@@ -10,7 +10,7 @@ function CameraIntro({ onFinish }: { onFinish: () => void }) {
     const { camera } = useThree();
     const targetPos = new THREE.Vector3(0, 5, 12);
 
-    useFrame((state, delta) => {
+    useFrame((_state, delta) => {
         // Smooth lerp to target
         camera.position.lerp(targetPos, delta * 1.5); // Adjust speed here
         camera.lookAt(0, 0, 0); // Keep looking at center
