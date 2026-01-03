@@ -74,7 +74,10 @@ export function GameScene() {
                     const x = (slotIndex - (totalPodiums - 1) / 2) * 1.5 + 1.5;
 
                     // Specific offset for Tralalero model which seems to be centered differently
-                    const zOffset = player.avatarId === 'tralalero.glb' ? -1.5 : 0;
+                    let zOffset = 0;
+                    if (player.avatarId === 'tralalero.glb') zOffset = -1.5;
+                    if (player.avatarId === 'tuntunsahur.glb') zOffset = 0.5; // Closer to podium
+
                     const labelH = player.avatarId === 'tralalero.glb' ? 1.6 : 2.4;
 
                     return (
