@@ -105,37 +105,49 @@ export function LobbyScreen() {
 
             {/* DASHBOARD VIEW */}
             {view === 'dashboard' && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
+                <div style={{
+                    display: 'flex',
+                    gap: '1.5rem',
+                    maxWidth: '1200px',
+                    margin: '0 auto',
+                    position: 'absolute',
+                    bottom: '2rem',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'flex-end'
+                }}>
 
                     {/* 1. Browser */}
-                    <div className="card" onClick={() => setView('browser')} style={{ cursor: 'pointer', textAlign: 'center', padding: '3rem 2rem', transition: 'transform 0.2s' }}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🌍</div>
-                        <h2>Public Rooms</h2>
-                        <p style={{ color: '#aaa' }}>Browse active games and join the fun</p>
-                        <div style={{ marginTop: '1rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                    <div className="card" onClick={() => setView('browser')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', flex: 1, minWidth: '180px', transition: 'transform 0.2s' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🌍</div>
+                        <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Public Rooms</h3>
+                        <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>Browse active games</p>
+                        <div style={{ marginTop: '0.5rem', fontWeight: 'bold', color: 'var(--color-primary)', fontSize: '0.9rem' }}>
                             {lobby.length} Active Rooms
                         </div>
                     </div>
 
                     {/* 2. Create */}
-                    <div className="card" onClick={() => setView('create')} style={{ cursor: 'pointer', textAlign: 'center', padding: '3rem 2rem' }}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔨</div>
-                        <h2>Create Room</h2>
-                        <p style={{ color: '#aaa' }}>Host your own game with custom rules</p>
+                    <div className="card" onClick={() => setView('create')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', flex: 1, minWidth: '180px', transition: 'transform 0.2s' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔨</div>
+                        <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Create Room</h3>
+                        <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>Host your own game</p>
                     </div>
 
                     {/* 3. Join Code */}
-                    <div className="card" onClick={() => setShowCodeModal(true)} style={{ cursor: 'pointer', textAlign: 'center', padding: '3rem 2rem' }}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔢</div>
-                        <h2>Join with Code</h2>
-                        <p style={{ color: '#aaa' }}>Have a code? Enter it here directly</p>
+                    <div className="card" onClick={() => setShowCodeModal(true)} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', flex: 1, minWidth: '180px', transition: 'transform 0.2s' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔢</div>
+                        <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Join with Code</h3>
+                        <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>Enter code directly</p>
                     </div>
 
                     {/* 4. Profile */}
-                    <div className="card" onClick={() => setView('profile')} style={{ cursor: 'pointer', textAlign: 'center', padding: '3rem 2rem' }}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>👤</div>
-                        <h2>My Profile</h2>
-                        <p style={{ color: '#aaa' }}>Manage your account and settings</p>
+                    <div className="card" onClick={() => setView('profile')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', flex: 1, minWidth: '180px', transition: 'transform 0.2s' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>👤</div>
+                        <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>My Profile</h3>
+                        <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>Manage account</p>
                     </div>
 
                 </div>
