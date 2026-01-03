@@ -10,13 +10,15 @@ export function Avatar({
     label = "",
     chatMessage = "",
     messageTimestamp = 0,
-    modelPath = "player.glb"
+    modelPath = "player.glb",
+    labelHeight = 2.4
 }: {
     position?: [number, number, number],
     label?: string,
     chatMessage?: string,
     messageTimestamp?: number,
-    modelPath?: string
+    modelPath?: string,
+    labelHeight?: number
 }) {
     // Inner ref for animation only
     const animRef = useRef<THREE.Group>(null);
@@ -47,13 +49,13 @@ export function Avatar({
 
             {/* Name Label */}
             {/* Name Label - Half Size */}
-            <Text position={[0, 2.4, 0]} fontSize={0.25} color="white" anchorX="center" anchorY="bottom">
+            <Text position={[0, labelHeight, 0]} fontSize={0.25} color="white" anchorX="center" anchorY="bottom">
                 {label}
             </Text>
 
             {/* Chat Bubble - Lower position, responsive font */}
             {showBubble && chatMessage && (
-                <Html position={[0, 2.1, 0]} center>
+                <Html position={[0, labelHeight - 0.3, 0]} center>
                     <div style={{
                         background: 'white',
                         padding: '0.5rem 0.8rem',

@@ -75,6 +75,7 @@ export function GameScene() {
 
                     // Specific offset for Tralalero model which seems to be centered differently
                     const zOffset = player.avatarId === 'tralalero.glb' ? -1.5 : 0;
+                    const labelH = player.avatarId === 'tralalero.glb' ? 1.6 : 2.4;
 
                     return (
                         <group key={playerId} rotation={[0, 5 * (Math.PI / 180), 0]}>
@@ -84,6 +85,7 @@ export function GameScene() {
                                 chatMessage={chatMsg?.text}
                                 messageTimestamp={chatMsg?.timestamp}
                                 modelPath={player.avatarId}
+                                labelHeight={labelH}
                             />
                         </group>
                     );
