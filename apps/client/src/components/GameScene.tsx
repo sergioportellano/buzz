@@ -9,17 +9,17 @@ import * as THREE from 'three';
 function CameraController({ inGame, onFinishIntro }: { inGame: boolean, onFinishIntro: (finished: boolean) => void }) {
     const { camera } = useThree();
     const gamePos = new THREE.Vector3(0, 5, 12);
-    const lobbyPos = new THREE.Vector3(0, 20, 50);
+    const lobbyPos = new THREE.Vector3(0, 10, 25); // Closer starting position
 
     // Determines target generic position based on state
     const targetVector = inGame ? gamePos : lobbyPos;
 
     useFrame((_state, delta) => {
-        // Clamp delta to prevent jumps
+        // Clamp delta
         const d = Math.min(delta, 0.1);
 
         // Smoothly interpolate current position to target
-        camera.position.lerp(targetVector, d * 2.0);
+        camera.position.lerp(targetVector, d * 0.8); // Slower speed (0.8)
         camera.lookAt(0, 0, 0);
 
         // Check if we are "close enough" to the target to consider the transition done
