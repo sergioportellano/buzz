@@ -31,7 +31,7 @@ export function GameScene() {
                     const chatMsg = useGameStore.getState().chatMessages[playerId];
                     // Position players on podiums. Simple math for now matching the Stage logic
                     const totalPodiums = room.maxPlayers || 4;
-                    const x = (index - (totalPodiums - 1) / 2) * 1.5;
+                    const x = (index - (totalPodiums - 1) / 2) * 1.5 + 1.5;
                     return (
                         <Avatar
                             key={playerId}

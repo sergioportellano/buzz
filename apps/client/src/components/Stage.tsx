@@ -17,7 +17,7 @@ export function Stage({ podiums = 4, players = [] }: { podiums?: number, players
 
             {/* Podiums */}
             {Array.from({ length: podiums }).map((_, i) => {
-                const xLin = (i - (podiums - 1) / 2) * 1.5;
+                const xLin = (i - (podiums - 1) / 2) * 1.5 + 1.5;
                 const player = players[i];
                 const score = player ? player.score : 0;
                 // Use nickname if available, else empty or label? User asked for POINTS.
