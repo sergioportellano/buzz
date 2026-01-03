@@ -118,6 +118,9 @@ export class Room {
         if (Object.keys(this.players).length >= this.maxPlayers) {
             return { success: false, message: "Room is full" };
         }
+        if (this.password && !password) {
+            return { success: false, message: "PASSWORD_REQUIRED" };
+        }
         if (this.password && this.password !== password) {
             return { success: false, message: "Invalid password" };
         }

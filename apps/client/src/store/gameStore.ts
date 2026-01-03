@@ -17,8 +17,8 @@ interface GameState {
     leaveRoom: () => void;
 
     // Handlers (Internally called by Socket)
-    setRoom: (room: RoomInfo) => void;
     setError: (msg: string) => void;
+    setRoom: (room: RoomInfo) => void;
 
     // Chat
     chatMessages: Record<string, ChatMessage>; // Map by SenderID (Last message) or Array? 

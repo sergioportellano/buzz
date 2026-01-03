@@ -49,17 +49,37 @@ export function LobbyScreen() {
 
     const handleManualJoin = () => {
         if (manualCode.length !== 4) return;
+
+        // Clear previous error to ensure new attempts are clean
+        useGameStore.getState().setError("");
+
         const room = lobby.find(r => r.code === manualCode.toUpperCase());
         if (room) {
             handleJoin(room.code, room.isPrivate);
             setShowCodeModal(false);
             setManualCode('');
         } else {
+            // Optimistic join attempt
+            // We set the ManualCode as "Pending" so we know which room to prompt for if it fails
+            setSelectedRoomCodePending(manualCode.toUpperCase());
             joinRoom(manualCode.toUpperCase());
             setShowCodeModal(false);
             setManualCode('');
         }
     };
+
+    // New state to track the room code we are trying to join blindly
+    const [selectedRoomCodePending, setSelectedRoomCodePending] = useState<string | null>(null);
+
+    // Watch for PASSWORD_REQUIRED error
+    useEffect(() => {
+        if (joinError === 'PASSWORD_REQUIRED' && selectedRoomCodePending) {
+            // Open the password modal for this room
+            setSelectedRoom(selectedRoomCodePending);
+            setSelectedRoomCodePending(null); // Clear pending
+            useGameStore.getState().setError(""); // Clear error
+        }
+    }, [joinError, selectedRoomCodePending]);
 
     // Shared "Back" button
     const BackButton = () => (
