@@ -24,6 +24,10 @@ app.post('/api/auth/guest', (req, res) => {
     res.json(result);
 });
 
+app.get('/health', (req, res) => {
+    res.send('OK');
+});
+
 // Socket Middleware
 io.use((socket, next) => {
     const token = socket.handshake.auth.token;
