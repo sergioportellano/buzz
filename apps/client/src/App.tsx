@@ -68,7 +68,16 @@ function App() {
               </div>
 
               {room.hostId === user.id && room.state === RoomState.LOBBY && (
-                <button onClick={startGame}>EMPEZAR PARTIDA</button>
+                <button
+                  onClick={startGame}
+                  disabled={Object.keys(room.players).length < 2}
+                  style={{
+                    opacity: Object.keys(room.players).length < 2 ? 0.5 : 1,
+                    cursor: Object.keys(room.players).length < 2 ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  EMPEZAR PARTIDA {Object.keys(room.players).length < 2 && '(Mín 2 jug.)'}
+                </button>
               )}
 
               <button onClick={leaveRoom} style={{ marginTop: '1rem', background: '#333' }}>

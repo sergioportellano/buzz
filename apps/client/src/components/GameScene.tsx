@@ -21,17 +21,17 @@ export function GameScene() {
                 <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
 
                 <Stage
-                    podiums={4}
+                    podiums={room?.maxPlayers || 4}
                     players={room ? Object.keys(room.players).sort().map(id => room.players[id]) : []}
                 />
 
-                {/* Players */}
                 {/* Players */}
                 {room && Object.keys(room.players).sort().map((playerId, index) => {
                     const player = room.players[playerId];
                     const chatMsg = useGameStore.getState().chatMessages[playerId];
                     // Position players on podiums. Simple math for now matching the Stage logic
-                    const x = (index - (4 - 1) / 2) * 1.5;
+                    const totalPodiums = room.maxPlayers || 4;
+                    const x = (index - (totalPodiums - 1) / 2) * 1.5;
                     return (
                         <Avatar
                             key={playerId}
