@@ -15,7 +15,7 @@ export function ChatInput() {
 
     return (
         <div style={{
-            position: 'absolute',
+            position: 'fixed',
             bottom: '20px',
             left: '50%',
             transform: 'translateX(-50%)',
