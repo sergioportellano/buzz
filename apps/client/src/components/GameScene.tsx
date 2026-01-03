@@ -33,7 +33,7 @@ export function GameScene() {
                     const totalPodiums = room.maxPlayers || 4;
                     const x = (index - (totalPodiums - 1) / 2) * 1.5 + 1.5;
                     return (
-                        <group key={playerId} rotation={[0, 5 * (Math.PI / 180), 0]}>
+                        <group key={playerId} rotation={[0, 25 * (Math.PI / 180), 0]}>
                             <Avatar
                                 position={[x, -0.7, 0]}
                                 label={player.nickname}

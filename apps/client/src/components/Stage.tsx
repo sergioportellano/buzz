@@ -32,7 +32,7 @@ export function Stage({ podiums = 4, players = [] }: { podiums?: number, players
 
 function Podium({ position, score, hasPlayer }: { position: [number, number, number], score: number, hasPlayer: boolean }) {
     return (
-        <group position={position} rotation={[0, 5 * (Math.PI / 180), 0]}>
+        <group position={position} rotation={[0, 25 * (Math.PI / 180), 0]}>
             {/* Base - Procedural Cylinder */}
             {/* Base - Procedural Cylinder */}
             <mesh position={[0, 0.4, 0]} castShadow receiveShadow>
