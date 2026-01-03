@@ -6,7 +6,7 @@ import { EmailService } from './EmailService';
 const prisma = new PrismaClient();
 
 export class AuthService {
-    static async register(nickname: string, password: string, email: string): Promise<{ user?: UserProfile; token?: string; error?: string; requiresVerification?: boolean }> {
+    static async register(nickname: string, password: string, email: string): Promise<{ user?: UserProfile; token?: string; error?: string; requiresVerification?: boolean; debugCode?: string }> {
         try {
             // Generate 6-digit code
             const code = Math.floor(100000 + Math.random() * 900000).toString();
