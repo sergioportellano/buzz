@@ -75,7 +75,7 @@ export function GameScene() {
                     return (
                         <group key={playerId} rotation={[0, 5 * (Math.PI / 180), 0]}>
                             <Avatar
-                                position={[x, -0.7, 0.8]}
+                                position={[x, -0.7, 0.65]}
                                 label={player.nickname}
                                 chatMessage={chatMsg?.text}
                                 messageTimestamp={chatMsg?.timestamp}
