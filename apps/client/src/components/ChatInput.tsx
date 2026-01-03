@@ -32,8 +32,8 @@ export function ChatInput() {
                     value={text}
                     onChange={(e) => {
                         const val = e.target.value;
-                        // Allow only letters, numbers and spaces
-                        if (/^[a-zA-Z0-9 ]*$/.test(val) && val.length <= 23) {
+                        // Allow letters (including Spanish), numbers and spaces. Limit 20.
+                        if (/^[a-zA-Z0-9 ñÑáéíóúÁÉÍÓÚ]*$/.test(val) && val.length <= 20) {
                             setText(val);
                         }
                     }}
