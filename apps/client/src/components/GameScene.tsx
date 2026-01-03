@@ -36,7 +36,7 @@ export function GameScene() {
                         <Avatar
                             key={playerId}
                             position={[x, -1.0, 0]}
-                            label={`${player.nickname} (${index})`}
+                            label={player.nickname}
                             chatMessage={chatMsg?.text}
                             messageTimestamp={chatMsg?.timestamp}
                         />

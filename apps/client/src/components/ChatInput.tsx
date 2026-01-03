@@ -30,7 +30,13 @@ export function ChatInput() {
                 <input
                     type="text"
                     value={text}
-                    onChange={(e) => setText(e.target.value)}
+                    onChange={(e) => {
+                        const val = e.target.value;
+                        // Allow only letters, numbers and spaces
+                        if (/^[a-zA-Z0-9 ]*$/.test(val) && val.length <= 23) {
+                            setText(val);
+                        }
+                    }}
                     placeholder="Say something..."
                     style={{
                         padding: '10px',

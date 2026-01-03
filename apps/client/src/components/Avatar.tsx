@@ -51,45 +51,48 @@ export function Avatar({
             </group>
 
             {/* Name Label */}
-            <Text position={[0, 2.8, 0]} fontSize={0.5} color="white" anchorX="center" anchorY="bottom">
+            {/* Name Label - Half Size */}
+            <Text position={[0, 2.4, 0]} fontSize={0.25} color="white" anchorX="center" anchorY="bottom">
                 {label}
             </Text>
 
-            {/* Chat Bubble */}
+            {/* Chat Bubble - Lower position, responsive font */}
             {showBubble && chatMessage && (
-                <Html position={[0, 3.5, 0]} center>
+                <Html position={[0, 2.7, 0]} center>
                     <div style={{
                         background: 'white',
-                        padding: '10px 15px',
-                        borderRadius: '15px',
+                        padding: '0.5rem 0.8rem',
+                        borderRadius: '1rem',
                         border: '2px solid black',
-                        fontSize: '16px',
+                        fontSize: 'clamp(12px, 2vw, 16px)', // Responsive font size
                         fontWeight: 'bold',
                         color: 'black',
                         whiteSpace: 'nowrap',
                         pointerEvents: 'none',
                         boxShadow: '2px 2px 5px rgba(0,0,0,0.3)',
-                        position: 'relative'
+                        position: 'relative',
+                        minWidth: '50px',
+                        textAlign: 'center'
                     }}>
                         {chatMessage}
                         {/* Little triangle for speech bubble tail */}
                         <div style={{
                             position: 'absolute',
-                            bottom: '-10px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            borderLeft: '10px solid transparent',
-                            borderRight: '10px solid transparent',
-                            borderTop: '10px solid black'
-                        }} />
-                        <div style={{
-                            position: 'absolute',
-                            bottom: '-7px',
+                            bottom: '-8px',
                             left: '50%',
                             transform: 'translateX(-50%)',
                             borderLeft: '8px solid transparent',
                             borderRight: '8px solid transparent',
-                            borderTop: '8px solid white'
+                            borderTop: '8px solid black'
+                        }} />
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-5px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            borderLeft: '6px solid transparent',
+                            borderRight: '6px solid transparent',
+                            borderTop: '6px solid white'
                         }} />
                     </div>
                 </Html>
