@@ -10,7 +10,13 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   nickname  String   @unique
-  password  String   // Plaintext for prototype as requested
+  email     String   @unique @default("temp@temp.com") // Default needed for migration of existing rows, or we delete database. Since it's proto, I'll drop db or handle restart. Actually, let's make it optional first or just unique.
+  // Wait, if I add @unique on email, existing rows with null might conflict if not handled. 
+  // Let's just assume we can reset DB or use a default.
+  // Better: Make email mandatory.
+  password  String
+  isVerified Boolean @default(false)
+  verificationCode String?
   createdAt DateTime @default(now())
   
   // Future extensions

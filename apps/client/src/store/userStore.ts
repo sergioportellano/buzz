@@ -10,7 +10,8 @@ interface UserState {
     socket: Socket | null;
     timeSync: TimeSync | null;
     loginGuest: () => Promise<void>;
-    register: (nickname: string, password: string) => Promise<{ success: boolean, error?: string }>;
+    register: (nickname: string, password: string, email: string) => Promise<{ success: boolean, error?: string, requiresVerification?: boolean }>;
+    verifyAccount: (email: string, code: string) => Promise<{ success: boolean, error?: string }>;
     login: (nickname: string, password: string) => Promise<{ success: boolean, error?: string }>;
     logout: () => void;
     connectSocket: () => void;
@@ -36,12 +37,33 @@ export const useUserStore = create<UserState>()(
                 }
             },
 
-            register: async (nickname, password) => {
+            register: async (nickname, password, email) => {
                 try {
                     const res = await fetch(`${API_URL}/api/auth/register`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ nickname, password })
+                        body: JSON.stringify({ nickname, password, email })
+                    });
+                    const data = await res.json();
+                    if (data.error) return { success: false, error: data.error };
+
+                    if (data.requiresVerification) {
+                        return { success: true, requiresVerification: true };
+                    }
+
+                    set({ user: data.user, token: data.token });
+                    return { success: true };
+                } catch (err) {
+                    return { success: false, error: "Network Error" };
+                }
+            },
+
+            verifyAccount: async (email, code) => {
+                try {
+                    const res = await fetch(`${API_URL}/api/auth/verify`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, code })
                     });
                     const data = await res.json();
                     if (data.error) return { success: false, error: data.error };

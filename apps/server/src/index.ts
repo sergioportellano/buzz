@@ -21,9 +21,16 @@ const io = new Server(httpServer, {
 
 // Auth Route
 app.post('/api/auth/register', async (req, res) => {
-    const { nickname, password } = req.body;
-    if (!nickname || !password) return res.status(400).json({ error: "Missing fields" });
-    const result = await AuthService.register(nickname, password);
+    const { nickname, password, email } = req.body;
+    if (!nickname || !password || !email) return res.status(400).json({ error: "Missing fields" });
+    const result = await AuthService.register(nickname, password, email);
+    res.json(result);
+});
+
+app.post('/api/auth/verify', async (req, res) => {
+    const { email, code } = req.body;
+    if (!email || !code) return res.status(400).json({ error: "Missing fields" });
+    const result = await AuthService.verifyAccount(email, code);
     res.json(result);
 });
 
