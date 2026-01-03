@@ -287,17 +287,21 @@ export function LobbyScreen() {
                     <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
                         <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Selecciona tu Avatar</h3>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                            {['player.glb', 'tralalero.glb'].map(model => {
+                            {[
+                                { id: 'player.glb', name: 'Clásico', icon: '🤖' },
+                                { id: 'tralalero.glb', name: 'Tralalero', icon: '👽' },
+                                { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur', icon: '👺' }
+                            ].map(avatar => {
                                 const currentAvatar = user?.avatarModel || 'player.glb';
-                                const isActive = currentAvatar === model;
+                                const isActive = currentAvatar === avatar.id;
 
                                 return (
                                     <div
-                                        key={model}
+                                        key={avatar.id}
                                         onClick={() => {
                                             // Optimistic update could be handled here or just wait for server
                                             // We'll trust the store update for now but make the UI clearer
-                                            useUserStore.getState().updateProfile({ avatarModel: model });
+                                            useUserStore.getState().updateProfile({ avatarModel: avatar.id });
                                         }}
                                         style={{
                                             border: isActive ? '2px solid var(--color-primary)' : '2px solid transparent',
@@ -313,10 +317,10 @@ export function LobbyScreen() {
                                         }}
                                     >
                                         <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-                                            {model === 'player.glb' ? '🤖' : '👽'}
+                                            {avatar.icon}
                                         </div>
                                         <div style={{ fontSize: '0.9rem', fontWeight: isActive ? 'bold' : 'normal', color: isActive ? 'var(--color-primary)' : 'white' }}>
-                                            {model === 'player.glb' ? 'Clásico' : 'Tralalero'}
+                                            {avatar.name}
                                             {isActive && ' (Seleccionado)'}
                                         </div>
                                     </div>
