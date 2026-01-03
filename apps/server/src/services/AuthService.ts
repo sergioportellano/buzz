@@ -38,6 +38,7 @@ export class AuthService {
                     });
 
                     // Send Verification Email
+                    console.error(`[Legacy/Claim] Sending verification email to ${email}`);
                     await EmailService.sendVerificationEmail(email, code);
                     return { requiresVerification: true };
                 }
@@ -58,7 +59,9 @@ export class AuthService {
             });
 
             // Send Verification Email
+            console.error(`Attempting to send verification email to ${email} with code ${code}`);
             await EmailService.sendVerificationEmail(email, code);
+            console.error(`Verification email sent to ${email}`);
 
             // Do NOT return token yet. Require verification.
             return { requiresVerification: true };
