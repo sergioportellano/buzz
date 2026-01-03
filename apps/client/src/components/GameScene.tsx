@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
 import { Stage } from './Stage';
@@ -9,13 +9,25 @@ import * as THREE from 'three';
 function CameraIntro({ onFinish }: { onFinish: () => void }) {
     const { camera } = useThree();
     const targetPos = new THREE.Vector3(0, 5, 12);
+    const startPos = new THREE.Vector3(0, 20, 50);
+
+    useEffect(() => {
+        // Force start position
+        camera.position.copy(startPos);
+        camera.lookAt(0, 0, 0);
+    }, [camera]);
 
     useFrame((_state, delta) => {
-        // Smooth lerp to target
-        camera.position.lerp(targetPos, delta * 1.5); // Adjust speed here
-        camera.lookAt(0, 0, 0); // Keep looking at center
+        // Clamp delta to prevent jumps
+        const d = Math.min(delta, 0.1);
 
-        if (camera.position.distanceTo(targetPos) < 0.1) {
+        // Smooth lerp to target
+        camera.position.lerp(targetPos, d * 2.0);
+        camera.lookAt(0, 0, 0);
+
+        if (camera.position.distanceTo(targetPos) < 0.5) {
+            camera.position.copy(targetPos);
+            camera.lookAt(0, 0, 0);
             onFinish();
         }
     });
@@ -29,8 +41,7 @@ export function GameScene() {
     return (
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }}>
             <Canvas shadows>
-                {/* Initial position logic handled by CameraIntro if active, else default */}
-                <PerspectiveCamera makeDefault position={introFinished ? [0, 5, 12] : [0, 20, 50]} fov={50} />
+                <PerspectiveCamera makeDefault fov={50} />
 
                 {!introFinished && <CameraIntro onFinish={() => setIntroFinished(true)} />}
 
