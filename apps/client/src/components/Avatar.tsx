@@ -7,11 +7,15 @@ import { Suspense } from 'react';
 
 export function Avatar({ position = [0, 0, 0] }: { position?: [number, number, number] }) {
     const ref = useRef<THREE.Group>(null);
+    const posRef = useRef(position);
+    posRef.current = position; // Keep ref sync with prop
 
     useFrame((state) => {
         if (ref.current) {
-            // Idle animation: float slightly up and down
-            ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 2) * 0.1;
+            // Use the ref to get the freshest position prop
+            const [x, y, z] = posRef.current;
+            // Only animate Y, let R3F handle X and Z via props, OR force set all if R3F glitches
+            ref.current.position.y = y + Math.sin(state.clock.elapsedTime * 2) * 0.1;
         }
     });
 
@@ -20,12 +24,11 @@ export function Avatar({ position = [0, 0, 0] }: { position?: [number, number, n
             <Suspense fallback={null}>
                 <GameAsset
                     path="/models/player.glb"
-                    scale={1.8}
+                    scale={1.4}
                     position={[0, 0, 0]}
-
-                // Simple material override if needed, though GameAsset clones scene
                 />
             </Suspense>
-        </group>
+
+        </group >
     );
 }

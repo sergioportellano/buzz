@@ -23,13 +23,15 @@ export function GameScene() {
                 <Stage podiums={4} />
 
                 {/* Players */}
-                {room && Object.values(room.players).map((player, index) => {
+                {/* Players */}
+                {room && Object.keys(room.players).sort().map((playerId, index) => {
+                    const player = room.players[playerId];
                     // Position players on podiums. Simple math for now matching the Stage logic
                     const x = (index - (4 - 1) / 2) * 1.5;
                     return (
                         <Avatar
-                            key={player.id}
-                            position={[x, -2, 0]} // y=-2 (Floor), z=0 (Behind podium at z=1)
+                            key={playerId}
+                            position={[x, -2, 0]}
                         />
                     );
                 })}
