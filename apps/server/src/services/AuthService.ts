@@ -27,8 +27,8 @@ export class AuthService {
             if (e.code === 'P2002') {
                 return { error: "Nickname already taken" };
             }
-            console.error("Register error", e);
-            return { error: "Registration failed" };
+            console.error("Register error detail:", JSON.stringify(e, Object.getOwnPropertyNames(e)));
+            return { error: "Registration failed: " + (e.message || "Unknown error") };
         }
     }
 
@@ -71,19 +71,6 @@ export class AuthService {
     }
 
     static async validateToken(token: string): Promise<UserProfile | null> {
-        // Check if guest (UUID check? or just in memory?)
-        // Guests are not in DB. We need to handle them.
-        // For MVP, if token is not found in DB, maybe it's a guest?
-        // But we don't store guests in DB. 
-        // We need a strategy. 
-        // Option 1: Store guests in DB with isGuest=true
-        // Option 2: Keep guests in memory (but restarting server kills them).
-        // Let's implement looking up in DB. If not found, check memory?
-        // But we removed memory cache.
-        // Let's assume for now we only support DB users for persistence.
-        // Guests will be ephemeral. We need a way to validate them.
-        // We can keep a simple memory set for active guest tokens.
-
         if (guestTokens.has(token)) {
             return guestTokens.get(token) || null;
         }
