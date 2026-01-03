@@ -25,7 +25,6 @@ export function GameScene() {
                 {/* Players */}
                 {/* Players */}
                 {room && Object.keys(room.players).sort().map((playerId, index) => {
-                    const player = room.players[playerId];
                     // Position players on podiums. Simple math for now matching the Stage logic
                     const x = (index - (4 - 1) / 2) * 1.5;
                     return (

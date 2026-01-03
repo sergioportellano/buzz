@@ -13,7 +13,7 @@ export function Avatar({ position = [0, 0, 0] }: { position?: [number, number, n
     useFrame((state) => {
         if (ref.current) {
             // Use the ref to get the freshest position prop
-            const [x, y, z] = posRef.current;
+            const [, y] = posRef.current;
             // Only animate Y, let R3F handle X and Z via props, OR force set all if R3F glitches
             ref.current.position.y = y + Math.sin(state.clock.elapsedTime * 2) * 0.1;
         }
