@@ -31,7 +31,7 @@ export function GameScene() {
                     return (
                         <Avatar
                             key={playerId}
-                            position={[x, -2, 0]}
+                            position={[x, -1.5, 0]}
                             label={`${player.nickname} (${index})`}
                         />
                     );
