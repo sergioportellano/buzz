@@ -85,8 +85,8 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
 
     const handleCreateQuestion = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!file) { setQMessage("Please select an audio file"); return; }
-        if (options.some(o => !o.trim())) { setQMessage("Please fill all 4 options"); return; }
+        if (!file) { setQMessage("Por favor selecciona un archivo de audio"); return; }
+        if (options.some(o => !o.trim())) { setQMessage("Por favor rellena las 4 opciones"); return; }
 
         setQLoading(true);
         setQMessage(null);
@@ -106,21 +106,21 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
             });
 
             if (res.ok) {
-                setQMessage("Question created!");
+                setQMessage("¡Pregunta creada!");
                 setText(""); setFile(null); setOptions(["", "", "", ""]); setCorrectIndex(0); setSelectedTags([]);
                 fetchQuestions();
             } else {
-                setQMessage("Error creating question");
+                setQMessage("Error al crear pregunta");
             }
         } catch (err) {
             console.error(err);
-            setQMessage("Network error");
+            setQMessage("Error de red");
         }
         setQLoading(false);
     };
 
     const handleDeleteQuestion = async (id: string) => {
-        if (!confirm("Delete this question?")) return;
+        if (!confirm("¿Eliminar esta pregunta?")) return;
         await fetch(`${import.meta.env.VITE_API_URL}/api/admin/questions/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
@@ -130,12 +130,12 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
 
     // --- User Handlers ---
     const toggleUserAdmin = async (u: UserData) => {
-        if (!confirm(`Change Admin status for ${u.nickname}?`)) return;
+        if (!confirm(`¿Cambiar estado de Admin para ${u.nickname}?`)) return;
         await updateUser(u.id, { isAdmin: !u.isAdmin });
     };
 
     const toggleUserVerified = async (u: UserData) => {
-        if (!confirm(`Change Verified status for ${u.nickname}?`)) return;
+        if (!confirm(`¿Cambiar estado de Verificación para ${u.nickname}?`)) return;
         await updateUser(u.id, { isVerified: !u.isVerified });
     };
 
@@ -153,26 +153,26 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
         } catch (err) { console.error(err); }
     }
 
-    if (!user?.isAdmin) return <div style={{ color: 'white', padding: '2rem' }}>Access Denied</div>;
+    if (!user?.isAdmin) return <div style={{ color: 'white', padding: '2rem' }}>Acceso Denegado</div>;
 
     return (
         <div className="container" style={{ overflowY: 'auto', padding: '2rem', display: 'block', height: '100vh', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h1>Admin Panel</h1>
+                <h1>Panel de Admin</h1>
                 <div style={{ display: 'flex', gap: '1rem' }}>
                     <button
                         onClick={() => setTab('questions')}
                         style={{ background: tab === 'questions' ? 'var(--color-primary)' : '#444' }}
                     >
-                        Questions
+                        Preguntas
                     </button>
                     <button
                         onClick={() => setTab('users')}
                         style={{ background: tab === 'users' ? 'var(--color-primary)' : '#444' }}
                     >
-                        Users
+                        Usuarios
                     </button>
-                    <button onClick={onBack} className="secondary-button">Back</button>
+                    <button onClick={onBack} className="secondary-button">Volver</button>
                 </div>
             </div>
 
@@ -181,20 +181,20 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                 <div className="dashboard-grid">
                     {/* Create Form */}
                     <div className="card" style={{ gridColumn: 'span 2' }}>
-                        <h2>Create New Question</h2>
+                        <h2>Crear Nueva Pregunta</h2>
                         <form onSubmit={handleCreateQuestion} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div>
-                                <label>Question Text</label>
+                                <label>Texto de la Pregunta</label>
                                 <input
                                     value={text}
                                     onChange={e => setText(e.target.value)}
-                                    placeholder="e.g. What song is this?"
+                                    placeholder="ej. ¿Qué canción es esta?"
                                     required
                                     style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
                                 />
                             </div>
                             <div>
-                                <label>Audio File (.mp3)</label>
+                                <label>Archivo de Audio (.mp3)</label>
                                 <input
                                     type="file"
                                     accept="audio/*"
@@ -215,7 +215,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                         <input
                                             value={opt}
                                             onChange={e => handleOptionChange(idx, e.target.value)}
-                                            placeholder={`Option ${idx + 1}`}
+                                            placeholder={`Opción ${idx + 1}`}
                                             required
                                             style={{ flex: 1, padding: '0.5rem' }}
                                         />
@@ -223,7 +223,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                 ))}
                             </div>
                             <div>
-                                <label>Tags / Genres</label>
+                                <label>Etiquetas / Géneros</label>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem', maxHeight: '150px', overflowY: 'auto', padding: '0.5rem', background: 'rgba(0,0,0,0.2)' }}>
                                     {GENRES.map(genre => (
                                         <button
@@ -248,22 +248,22 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                             </div>
                             {qMessage && <p style={{ color: qMessage.includes('Error') ? 'red' : 'lime' }}>{qMessage}</p>}
                             <button type="submit" disabled={qLoading} className="primary-button" style={{ marginTop: '1rem' }}>
-                                {qLoading ? 'Uploading...' : 'Create Question'}
+                                {qLoading ? 'Subiendo...' : 'Crear Pregunta'}
                             </button>
                         </form>
                     </div>
 
                     {/* Question List */}
                     <div className="card" style={{ gridColumn: 'span 2' }}>
-                        <h2>Existing Questions ({questions.length})</h2>
+                        <h2>Preguntas Existentes ({questions.length})</h2>
                         <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
                                     <tr style={{ textAlign: 'left', borderBottom: '1px solid #444' }}>
-                                        <th style={{ padding: '0.5rem' }}>Text</th>
-                                        <th>Tags</th>
+                                        <th style={{ padding: '0.5rem' }}>Texto</th>
+                                        <th>Etiquetas</th>
                                         <th>Audio</th>
-                                        <th>Actions</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -279,7 +279,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                             </td>
                                             <td>{q.audioUrl ? '🎵' : '❌'}</td>
                                             <td>
-                                                <button onClick={() => handleDeleteQuestion(q.id)} style={{ background: 'red', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '4px 8px', color: 'white' }}>Delete</button>
+                                                <button onClick={() => handleDeleteQuestion(q.id)} style={{ background: 'red', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '4px 8px', color: 'white' }}>Eliminar</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -293,16 +293,16 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
             {/* --- USERS TAB --- */}
             {tab === 'users' && (
                 <div className="card">
-                    <h2>User Management</h2>
+                    <h2>Gestión de Usuarios</h2>
                     <div style={{ overflowX: 'auto' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
                             <thead>
                                 <tr style={{ textAlign: 'left', borderBottom: '1px solid #444' }}>
-                                    <th style={{ padding: '0.5rem' }}>Nickname</th>
+                                    <th style={{ padding: '0.5rem' }}>Usuario</th>
                                     <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -311,10 +311,10 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                         <td style={{ padding: '0.8rem 0.5rem', fontWeight: 'bold' }}>{u.nickname}</td>
                                         <td style={{ padding: '0.8rem 0.5rem' }}>{u.email}</td>
                                         <td style={{ padding: '0.8rem 0.5rem' }}>
-                                            {u.isAdmin ? <span style={{ color: 'gold' }}>ADMIN</span> : 'User'}
+                                            {u.isAdmin ? <span style={{ color: 'gold' }}>ADMIN</span> : 'Usuario'}
                                         </td>
                                         <td style={{ padding: '0.8rem 0.5rem' }}>
-                                            {u.isVerified ? <span style={{ color: 'lime' }}>Verified</span> : <span style={{ color: 'orange' }}>Unverified</span>}
+                                            {u.isVerified ? <span style={{ color: 'lime' }}>Verificado</span> : <span style={{ color: 'orange' }}>No Verificado</span>}
                                         </td>
                                         <td style={{ padding: '0.8rem 0.5rem', display: 'flex', gap: '0.5rem' }}>
                                             <button
@@ -326,7 +326,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                                     fontSize: '0.8rem'
                                                 }}
                                             >
-                                                {u.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                                                {u.isAdmin ? 'Quitar Admin' : 'Hacer Admin'}
                                             </button>
                                             <button
                                                 onClick={() => toggleUserVerified(u)}
@@ -337,7 +337,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                                     fontSize: '0.8rem'
                                                 }}
                                             >
-                                                {u.isVerified ? 'Unverify' : 'Verify'}
+                                                {u.isVerified ? 'Desverificar' : 'Verificar'}
                                             </button>
                                         </td>
                                     </tr>

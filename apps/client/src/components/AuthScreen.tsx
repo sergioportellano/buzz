@@ -24,7 +24,7 @@ export function AuthScreen() {
             const res = await verifyAccount(email, verificationCode);
             setLoading(false);
             if (!res.success) {
-                setError(res.error || 'Verification failed');
+                setError(res.error || 'Falló la verificación');
             }
             return; // If success, user becomes set, App.tsx redirects
         }
@@ -34,10 +34,10 @@ export function AuthScreen() {
             const res = await register(nickname, password, email);
             setLoading(false);
             if (!res.success) {
-                setError(res.error || 'Registration failed');
+                setError(res.error || 'Falló el registro');
             } else if (res.requiresVerification) {
-                const codeMsg = res.debugCode ? ` Code: ${res.debugCode}` : ' Please check your email/console.';
-                setSuccessMsg(`Registration successful!${codeMsg} (Development Mode)`);
+                const codeMsg = res.debugCode ? ` Código: ${res.debugCode}` : ' Por favor revisa tu correo/consola.';
+                setSuccessMsg(`¡Registro exitoso!${codeMsg} (Modo Desarrollo)`);
                 setMode('verify');
             }
             return;
@@ -47,7 +47,7 @@ export function AuthScreen() {
         const res = await login(nickname, password);
         setLoading(false);
         if (!res.success) {
-            setError(res.error || 'Unknown error');
+            setError(res.error || 'Error desconocido');
         }
     };
 
@@ -63,22 +63,22 @@ export function AuthScreen() {
                             style={{ border: 'none', cursor: 'pointer', fontSize: '1rem' }}
                             onClick={() => { setMode('login'); setError(null); }}
                         >
-                            LOGIN
+                            INICIAR SESIÓN
                         </button>
                         <button
                             className={mode === 'register' ? 'status-badge connected' : 'status-badge'}
                             style={{ border: 'none', cursor: 'pointer', fontSize: '1rem' }}
                             onClick={() => { setMode('register'); setError(null); }}
                         >
-                            REGISTER
+                            REGISTRARSE
                         </button>
                     </div>
                 )}
 
                 {mode === 'verify' && (
                     <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                        <h3>Verify Account</h3>
-                        <p style={{ color: '#aaa', fontSize: '0.9rem' }}>We sent a code to {email}</p>
+                        <h3>Verificar Cuenta</h3>
+                        <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Enviamos un código a {email}</p>
                     </div>
                 )}
 
@@ -88,7 +88,7 @@ export function AuthScreen() {
                     {mode !== 'verify' && (
                         <>
                             <input
-                                placeholder="Nickname"
+                                placeholder="Usuario"
                                 value={nickname}
                                 onChange={e => setNickname(e.target.value)}
                                 required
@@ -96,7 +96,7 @@ export function AuthScreen() {
                             />
                             <input
                                 type="password"
-                                placeholder="Password"
+                                placeholder="Contraseña"
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
                                 required
@@ -109,7 +109,7 @@ export function AuthScreen() {
                     {mode === 'register' && (
                         <input
                             type="email"
-                            placeholder="Email Address"
+                            placeholder="Correo Electrónico"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             required
@@ -120,7 +120,7 @@ export function AuthScreen() {
                     {/* Verification Field */}
                     {mode === 'verify' && (
                         <input
-                            placeholder="6-Digit Code"
+                            placeholder="Código de 6 dígitos"
                             value={verificationCode}
                             onChange={e => setVerificationCode(e.target.value)}
                             required
@@ -137,15 +137,15 @@ export function AuthScreen() {
                         background: mode === 'verify' ? 'var(--color-primary)' : undefined,
                         fontWeight: 'bold'
                     }}>
-                        {loading ? 'Processing...' : (
-                            mode === 'login' ? 'LOG IN' :
-                                mode === 'register' ? 'REGISTER' : 'VERIFY CODE'
+                        {loading ? 'Procesando...' : (
+                            mode === 'login' ? 'ENTRAR' :
+                                mode === 'register' ? 'REGISTRARSE' : 'VERIFICAR CÓDIGO'
                         )}
                     </button>
 
                     {mode === 'verify' && (
                         <button type="button" onClick={() => setMode('login')} style={{ background: 'transparent', fontSize: '0.8rem', color: '#888', marginTop: '0.5rem' }}>
-                            Cancel / Log In
+                            Cancelar / Entrar
                         </button>
                     )}
                 </form>
@@ -153,7 +153,7 @@ export function AuthScreen() {
                 {mode !== 'verify' && (
                     <div style={{ marginTop: '1rem', borderTop: '1px solid #333', paddingTop: '1rem' }}>
                         <button onClick={loginGuest} style={{ background: 'transparent', border: '1px solid #444' }}>
-                            Play as Guest
+                            Jugar como Invitado
                         </button>
                     </div>
                 )}

@@ -37,7 +37,7 @@ export function ChatInput() {
                             setText(val);
                         }
                     }}
-                    placeholder="Say something..."
+                    placeholder="Escribe algo..."
                     style={{
                         padding: '10px',
                         borderRadius: '10px',
@@ -59,7 +59,7 @@ export function ChatInput() {
                         cursor: 'pointer'
                     }}
                 >
-                    Send
+                    Enviar
                 </button>
             </form>
         </div>

@@ -48,8 +48,14 @@ function App() {
         room ? (
           <div className="container" style={{ position: 'relative', zIndex: 1 }}>
             <div className="card">
-              <h1>Room: {room.code}</h1>
-              <div className="status-badge connected">{room.state}</div>
+              <h1>Sala: {room.code}</h1>
+              <div className="status-badge connected">
+                {room.state === 'LOBBY' ? 'EN SALA' :
+                  room.state === 'PRE_ROUND' ? 'PREPARANDO' :
+                    room.state === 'PLAYING' ? 'JUGANDO' :
+                      room.state === 'POST_ROUND' ? 'FIN DE RONDA' :
+                        room.state === 'GAME_OVER' ? 'FIN PARTIDA' : room.state}
+              </div>
 
               <div style={{ margin: '2rem 0', display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 {Object.values(room.players).map(p => (
@@ -62,19 +68,19 @@ function App() {
               </div>
 
               {room.hostId === user.id && room.state === RoomState.LOBBY && (
-                <button onClick={startGame}>START GAME</button>
+                <button onClick={startGame}>EMPEZAR PARTIDA</button>
               )}
 
               <button onClick={leaveRoom} style={{ marginTop: '1rem', background: '#333' }}>
-                LEAVE ROOM
+                SALIR DE LA SALA
               </button>
 
               {room.state === RoomState.PRE_ROUND && (
-                <h2>Round starting soon...</h2>
+                <h2>La ronda comienza pronto...</h2>
               )}
 
               {room.state === RoomState.PLAYING && (
-                <h2>🎵 Music Playing...</h2>
+                <h2>🎵 Música Sonando...</h2>
               )}
 
             </div>
