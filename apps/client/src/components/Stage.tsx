@@ -17,9 +17,9 @@ export function Stage({ podiums = 4 }) {
             {/* Podiums (We keep them generated code-side for dynamic placement) */}
             {Array.from({ length: podiums }).map((_, i) => {
                 // Or simple linear line for MVP
-                const xLin = (i - (podiums - 1) / 2) * 3;
+                const xLin = (i - (podiums - 1) / 2) * 1.5;
 
-                return <Podium key={i} position={[xLin, 0, -2]} label={`P${i + 1}`} />
+                return <Podium key={i} position={[xLin, 0, 1]} label={`P${i + 1}`} />
             })}
         </group>
     );
@@ -30,14 +30,14 @@ function Podium({ position, label }: { position: [number, number, number], label
     return (
         <group position={position}>
             {/* Base */}
-            <mesh position={[0, 1, 0]} castShadow receiveShadow>
-                <cylinderGeometry args={[1, 1, 2, 32]} />
+            <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
+                <cylinderGeometry args={[0.4, 0.4, 1, 32]} />
                 <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
             </mesh>
 
             {/* Light Strip */}
-            <mesh position={[0, 1, 1.01]}>
-                <planeGeometry args={[0.5, 1.5]} />
+            <mesh position={[0, 0.5, 0.41]}>
+                <planeGeometry args={[0.2, 0.8]} />
                 <meshBasicMaterial color="cyan" toneMapped={false} />
             </mesh>
 

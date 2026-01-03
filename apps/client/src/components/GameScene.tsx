@@ -25,12 +25,11 @@ export function GameScene() {
                 {/* Players */}
                 {room && Object.values(room.players).map((player, index) => {
                     // Position players on podiums. Simple math for now matching the Stage logic
-                    const x = (index - (4 - 1) / 2) * 3;
+                    const x = (index - (4 - 1) / 2) * 1.5;
                     return (
                         <Avatar
                             key={player.id}
-                            position={[x, 2, -2]}
-                            color={player.id === room.hostId ? 'gold' : 'hotpink'}
+                            position={[x, 1, 1]}
                         />
                     );
                 })}

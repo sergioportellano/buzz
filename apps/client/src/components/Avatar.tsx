@@ -2,7 +2,10 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export function Avatar({ color = 'hotpink', position = [0, 0, 0] }: { color?: string, position?: [number, number, number] }) {
+import { GameAsset } from './GameAsset';
+import { Suspense } from 'react';
+
+export function Avatar({ position = [0, 0, 0] }: { position?: [number, number, number] }) {
     const ref = useRef<THREE.Group>(null);
 
     useFrame((state) => {
@@ -14,23 +17,15 @@ export function Avatar({ color = 'hotpink', position = [0, 0, 0] }: { color?: st
 
     return (
         <group ref={ref} position={position}>
-            {/* Head */}
-            <mesh position={[0, 1.8, 0]}>
-                <sphereGeometry args={[0.4, 32, 32]} />
-                <meshStandardMaterial color={color} roughness={0.3} />
-            </mesh>
+            <Suspense fallback={null}>
+                <GameAsset
+                    path="/models/player.glb"
+                    scale={1.8}
+                    position={[0, 0, 0]}
 
-            {/* Body */}
-            <mesh position={[0, 1, 0]}>
-                <capsuleGeometry args={[0.3, 1, 4, 8]} />
-                <meshStandardMaterial color="white" />
-            </mesh>
-
-            {/* Visor/Eyes */}
-            <mesh position={[0, 1.8, 0.35]}>
-                <boxGeometry args={[0.5, 0.15, 0.1]} />
-                <meshStandardMaterial color="black" roughness={0.1} metalness={0.9} />
-            </mesh>
+                // Simple material override if needed, though GameAsset clones scene
+                />
+            </Suspense>
         </group>
     );
 }
