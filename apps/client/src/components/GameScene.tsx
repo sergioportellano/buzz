@@ -29,7 +29,7 @@ export function GameScene() {
                     return (
                         <Avatar
                             key={player.id}
-                            position={[x, 1, 1]}
+                            position={[x, -2, 0]} // y=-2 (Floor), z=0 (Behind podium at z=1)
                         />
                     );
                 })}
