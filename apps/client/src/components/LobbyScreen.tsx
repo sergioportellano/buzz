@@ -81,6 +81,16 @@ export function LobbyScreen() {
         }
     }, [joinError, selectedRoomCodePending]);
 
+    // Auto-dismiss errors after 5 seconds
+    useEffect(() => {
+        if (joinError) {
+            const timer = setTimeout(() => {
+                useGameStore.getState().setError("");
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [joinError]);
+
     // Shared "Back" button
     const BackButton = () => (
         <button
