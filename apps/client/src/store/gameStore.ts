@@ -127,8 +127,11 @@ export const initGameListeners = () => {
         });
 
         socket.on('kicked', (msg: string) => {
-            alert(msg);
-            useGameStore.getState().leaveRoom();
+            // alert(msg); // Removed sticky alert
+            // Instead of reloading, we just clear the room and set the error message
+            // so the user sees it in the Lobby UI.
+            useGameStore.getState().setRoom(null as any); // Force null to go to lobby
+            useGameStore.getState().setError(msg);
         });
     });
 };
