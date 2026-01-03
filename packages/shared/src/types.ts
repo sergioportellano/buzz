@@ -34,6 +34,8 @@ export interface RoomInfo {
     totalRounds: number;
     roundStartTime?: number; // Timestamp
     roundDuration?: number; // Seconds
+    maxPlayers: number;
+    isPrivate: boolean;
 }
 
 export interface GameConfig {

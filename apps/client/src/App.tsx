@@ -1,29 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import './index.css';
 import { useUserStore } from './store/userStore';
 import { useGameStore, initGameListeners } from './store/gameStore';
 import { RoomState } from '@buzz/shared';
 import { GameScene } from './components/GameScene';
 import { ChatInput } from './components/ChatInput';
+import { AuthScreen } from './components/AuthScreen';
+import { LobbyScreen } from './components/LobbyScreen';
 
 function App() {
-  const { user, socket, loginGuest, connectSocket } = useUserStore();
-  const { room, createRoom, joinRoom, startGame, joinError } = useGameStore();
-  const [init, setInit] = useState(false);
-  const [code, setCode] = useState("");
+  const { user, connectSocket } = useUserStore();
+  const { room, startGame, leaveRoom } = useGameStore();
 
   useEffect(() => {
-    const initAuth = async () => {
-      await loginGuest();
+    // If user is already persisted, connect socket
+    if (user) {
       connectSocket();
-      setInit(true);
-    };
-    initAuth();
+    }
     initGameListeners();
-  }, []);
+  }, [user]);
 
-  if (!init || !user) {
-    return <div className="card"><h1>Connecting...</h1></div>;
+  if (!user) {
+    return (
+      <>
+        <GameScene />
+        <AuthScreen />
+      </>
+    );
   }
 
   return (
@@ -50,6 +53,10 @@ function App() {
               <button onClick={startGame}>START GAME</button>
             )}
 
+            <button onClick={leaveRoom} style={{ marginTop: '1rem', background: '#333' }}>
+              LEAVE ROOM
+            </button>
+
             {room.state === RoomState.PRE_ROUND && (
               <h2>Round starting soon...</h2>
             )}
@@ -62,45 +69,7 @@ function App() {
           <ChatInput />
         </div>
       ) : (
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div className="card">
-            <h1>Welcome, {user.nickname}</h1>
-            <div style={{ margin: '1rem 0' }}>
-              {socket?.connected ?
-                <span className="status-badge connected">ONLINE</span> :
-                <span className="status-badge">CONNECTING...</span>
-              }
-            </div>
-
-            <div style={{ marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <button onClick={createRoom}>CREATE ROOM</button>
-
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  value={code}
-                  onChange={e => setCode(e.target.value.toUpperCase())}
-                  placeholder="ABCD"
-                  maxLength={4}
-                  style={{
-                    background: 'rgba(0,0,0,0.3)',
-                    border: '1px solid #444',
-                    color: 'white',
-                    padding: '0.8rem',
-                    borderRadius: '8px',
-                    textAlign: 'center',
-                    fontSize: '1.2rem',
-                    width: '100px'
-                  }}
-                />
-                <button onClick={() => joinRoom(code)} disabled={code.length !== 4}>
-                  JOIN
-                </button>
-              </div>
-
-              {joinError && <p style={{ color: 'red' }}>{joinError}</p>}
-            </div>
-          </div>
-        </div>
+        <LobbyScreen />
       )}
     </>
   );

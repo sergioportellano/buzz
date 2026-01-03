@@ -7,8 +7,12 @@ interface GameState {
     joinError: string | null;
 
     // Actions
-    createRoom: () => void;
-    joinRoom: (code: string) => void;
+    lobby: any[]; // RoomInfo[] but simplified for list
+
+    // Actions
+    createRoom: (options: { maxPlayers: number, password?: string }) => void;
+    joinRoom: (code: string, password?: string) => void;
+    getLobby: () => void;
     startGame: () => void;
     leaveRoom: () => void;
 
@@ -23,23 +27,30 @@ interface GameState {
     // Start with Map for "Bubble Only" requirement simplicity.
     addChatMessage: (msg: ChatMessage) => void;
     sendChatMessage: (text: string) => void;
+    setLobby: (lobby: any[]) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
     room: null,
+    lobby: [],
     joinError: null,
 
-    createRoom: () => {
+    createRoom: (options) => {
         const socket = useUserStore.getState().socket;
         if (!socket) return;
-        socket.emit('create_room');
+        socket.emit('create_room', options);
     },
 
-    joinRoom: (code: string) => {
+    joinRoom: (code, password) => {
         const socket = useUserStore.getState().socket;
         if (!socket) return;
         set({ joinError: null });
-        socket.emit('join_room', code);
+        socket.emit('join_room', code, password);
+    },
+
+    getLobby: () => {
+        const socket = useUserStore.getState().socket;
+        if (socket) socket.emit('get_lobby');
     },
 
     startGame: () => {
@@ -55,6 +66,7 @@ export const useGameStore = create<GameState>((set) => ({
     },
 
     setRoom: (room) => set({ room }),
+    setLobby: (lobby) => set({ lobby }),
     setError: (msg) => set({ joinError: msg }),
 
     chatMessages: {},
@@ -97,6 +109,10 @@ export const initGameListeners = () => {
 
         socket.on('chat_broadcast', (msg) => {
             useGameStore.getState().addChatMessage(msg);
+        });
+
+        socket.on('lobby_update', (lobby) => {
+            useGameStore.getState().setLobby(lobby);
         });
     });
 };

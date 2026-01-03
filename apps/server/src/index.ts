@@ -19,6 +19,20 @@ const io = new Server(httpServer, {
 });
 
 // Auth Route
+app.post('/api/auth/register', async (req, res) => {
+    const { nickname, password } = req.body;
+    if (!nickname || !password) return res.status(400).json({ error: "Missing fields" });
+    const result = await AuthService.register(nickname, password);
+    res.json(result);
+});
+
+app.post('/api/auth/login', async (req, res) => {
+    const { nickname, password } = req.body;
+    if (!nickname || !password) return res.status(400).json({ error: "Missing fields" });
+    const result = await AuthService.login(nickname, password);
+    res.json(result);
+});
+
 app.post('/api/auth/guest', (req, res) => {
     const result = AuthService.createGuest();
     res.json(result);
@@ -29,15 +43,19 @@ app.get('/health', (req, res) => {
 });
 
 // Socket Middleware
-io.use((socket, next) => {
+io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
-    const user = AuthService.validateToken(token);
-    if (!user) {
-        return next(new Error("Authentication Error"));
+    try {
+        const user = await AuthService.validateToken(token);
+        if (!user) {
+            return next(new Error("Authentication Error"));
+        }
+        // Attach user to socket
+        (socket as any).user = user;
+        next();
+    } catch (e) {
+        next(new Error("Authentication Error"));
     }
-    // Attach user to socket
-    (socket as any).user = user;
-    next();
 });
 
 const gameManager = new GameManager(io);

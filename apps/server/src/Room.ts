@@ -17,11 +17,16 @@ export class Room {
 
     private io: Server;
 
-    constructor(io: Server, hostId: string, code: string) {
+    maxPlayers: number;
+    password?: string;
+
+    constructor(io: Server, hostId: string, code: string, maxPlayers: number = 4, password?: string) {
         this.io = io;
         this.id = uuidv4();
         this.hostId = hostId;
         this.code = code;
+        this.maxPlayers = maxPlayers;
+        this.password = password;
     }
 
     addPlayer(user: UserProfile) {
@@ -76,7 +81,9 @@ export class Room {
             currentRoundIndex: this.currentRoundIndex,
             totalRounds: this.totalRounds,
             roundStartTime: this.roundStartTime,
-            roundDuration: this.roundDuration
+            roundDuration: this.roundDuration,
+            maxPlayers: this.maxPlayers,
+            isPrivate: !!this.password
         };
     }
 
@@ -86,5 +93,15 @@ export class Room {
 
     broadcastChat(message: any) {
         this.io.to(this.id).emit('chat_broadcast', message);
+    }
+
+    canJoin(password?: string): { success: boolean, message?: string } {
+        if (Object.keys(this.players).length >= this.maxPlayers) {
+            return { success: false, message: "Room is full" };
+        }
+        if (this.password && this.password !== password) {
+            return { success: false, message: "Invalid password" };
+        }
+        return { success: true };
     }
 }

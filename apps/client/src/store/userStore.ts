@@ -10,6 +10,9 @@ interface UserState {
     socket: Socket | null;
     timeSync: TimeSync | null;
     loginGuest: () => Promise<void>;
+    register: (nickname: string, password: string) => Promise<{ success: boolean, error?: string }>;
+    login: (nickname: string, password: string) => Promise<{ success: boolean, error?: string }>;
+    logout: () => void;
     connectSocket: () => void;
 }
 
@@ -24,16 +27,53 @@ export const useUserStore = create<UserState>()(
             timeSync: null,
 
             loginGuest: async () => {
-                const existingToken = get().token;
-                if (existingToken) return; // Already logged in (persisted)
-
                 try {
                     const res = await fetch(`${API_URL}/api/auth/guest`, { method: 'POST' });
                     const data = await res.json();
                     set({ user: data.user, token: data.token });
                 } catch (err) {
-                    console.error('Login failed', err);
+                    console.error('Guest Login failed', err);
                 }
+            },
+
+            register: async (nickname, password) => {
+                try {
+                    const res = await fetch(`${API_URL}/api/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nickname, password })
+                    });
+                    const data = await res.json();
+                    if (data.error) return { success: false, error: data.error };
+
+                    set({ user: data.user, token: data.token });
+                    return { success: true };
+                } catch (err) {
+                    return { success: false, error: "Network Error" };
+                }
+            },
+
+            login: async (nickname, password) => {
+                try {
+                    const res = await fetch(`${API_URL}/api/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nickname, password })
+                    });
+                    const data = await res.json();
+                    if (data.error) return { success: false, error: data.error };
+
+                    set({ user: data.user, token: data.token });
+                    return { success: true };
+                } catch (err) {
+                    return { success: false, error: "Network Error" };
+                }
+            },
+
+            logout: () => {
+                const { socket } = get();
+                if (socket) socket.disconnect();
+                set({ user: null, token: null, socket: null, timeSync: null });
             },
 
             connectSocket: () => {
