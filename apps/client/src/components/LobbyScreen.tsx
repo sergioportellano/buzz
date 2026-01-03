@@ -1,13 +1,15 @@
+```typescript
 import { useState, useEffect } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useUserStore } from '../store/userStore';
+import { AdminScreen } from './AdminScreen'; // Added AdminScreen import
 
 export function LobbyScreen() {
     const { user, logout } = useUserStore();
     const { createRoom, joinRoom, lobby, getLobby, joinError } = useGameStore();
 
     // Navigation State
-    const [view, setView] = useState<'dashboard' | 'browser' | 'create' | 'profile'>('dashboard');
+    const [view, setView] = useState<'dashboard' | 'browser' | 'create' | 'profile' | 'admin'>('dashboard'); // Added 'admin' to view state
 
     // Create Form State
     const [maxPlayers, setMaxPlayers] = useState(4);

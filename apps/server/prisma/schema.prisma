@@ -11,14 +11,38 @@ model User {
   id        String   @id @default(uuid())
   nickname  String   @unique
   email     String   @unique @default("temp@temp.com") // Default needed for migration of existing rows, or we delete database. Since it's proto, I'll drop db or handle restart. Actually, let's make it optional first or just unique.
-  // Wait, if I add @unique on email, existing rows with null might conflict if not handled. 
+  // Wait, if I add @unique on email, existing rows with null might conflict if not handled.
   // Let's just assume we can reset DB or use a default.
   // Better: Make email mandatory.
   password  String
   isVerified Boolean @default(false)
   verificationCode String?
+  isAdmin        Boolean  @default(false)
   createdAt DateTime @default(now())
   
   // Future extensions
   // matches Match[]
+}
+
+model Question {
+  id        String           @id @default(uuid())
+  text      String
+  audioUrl  String?
+  createdAt DateTime         @default(now())
+  options   QuestionOption[]
+  tags      Tag[]
+}
+
+model QuestionOption {
+  id         String   @id @default(uuid())
+  text       String
+  isCorrect  Boolean
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+}
+
+model Tag {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  questions Question[]
 }

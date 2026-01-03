@@ -2,6 +2,7 @@ export interface UserProfile {
     id: string;
     nickname: string;
     isGuest: boolean;
+    isAdmin?: boolean;
     createdAt: number;
 }
 // Core Game Types

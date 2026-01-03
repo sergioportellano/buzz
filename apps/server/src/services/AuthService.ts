@@ -96,6 +96,7 @@ export class AuthService {
                     id: updatedUser.id,
                     nickname: updatedUser.nickname,
                     isGuest: false,
+                    isAdmin: updatedUser.isAdmin,
                     createdAt: updatedUser.createdAt.getTime()
                 },
                 token: updatedUser.id
@@ -126,6 +127,7 @@ export class AuthService {
                     id: user.id,
                     nickname: user.nickname,
                     isGuest: false,
+                    isAdmin: user.isAdmin,
                     createdAt: user.createdAt.getTime()
                 },
                 token: user.id
@@ -142,6 +144,7 @@ export class AuthService {
             id,
             nickname: `Guest_${id.slice(0, 4)}`,
             isGuest: true,
+            isAdmin: false,
             createdAt: Date.now()
         };
 
@@ -163,6 +166,7 @@ export class AuthService {
                 id: user.id,
                 nickname: user.nickname,
                 isGuest: false,
+                isAdmin: user.isAdmin,
                 createdAt: user.createdAt.getTime()
             };
         }

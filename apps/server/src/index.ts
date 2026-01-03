@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
@@ -20,6 +21,88 @@ const io = new Server(httpServer, {
 });
 
 // Auth Route
+// Serve static files (uploaded audio)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+// --- Admin Endpoints ---
+import { QuestionService } from './services/QuestionService';
+import { UserService } from './services/UserService';
+import { upload } from './services/FileService';
+
+// Middleware to check Admin
+const requireAdmin = async (req: any, res: any, next: any) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "No token" });
+    const token = authHeader.split(" ")[1]; // Bearer <id>
+    const user = await AuthService.validateToken(token);
+    if (!user || !user.isAdmin) return res.status(403).json({ error: "Forbidden" });
+    next();
+};
+
+// --- User Management ---
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
+    try {
+        const users = await UserService.listUsers();
+        res.json(users);
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.put('/api/admin/users/:id', requireAdmin, async (req, res) => {
+    try {
+        const updatedUser = await UserService.updateUser(req.params.id, req.body);
+        res.json(updatedUser);
+    } catch (e: any) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
+// Create Question (with Audio)
+app.post('/api/admin/questions', requireAdmin, upload.single('audio'), async (req: any, res: any) => {
+    try {
+        const body = req.body;
+        // Parse options and tags since they might come as JSON strings from FormData
+        let options = body.options;
+        if (typeof options === 'string') options = JSON.parse(options);
+
+        let tags = body.tags;
+        if (typeof tags === 'string') tags = JSON.parse(tags);
+
+        const data = {
+            text: body.text,
+            options: options,
+            correctOptionIndex: body.correctOptionIndex,
+            tags: tags
+        };
+
+        const result = await QuestionService.createQuestion(data, req.file);
+        res.json(result);
+    } catch (e: any) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// List Questions
+app.get('/api/admin/questions', requireAdmin, async (req, res) => {
+    const questions = await QuestionService.listQuestions();
+    res.json(questions);
+});
+
+// Delete Question
+app.delete('/api/admin/questions/:id', requireAdmin, async (req, res) => {
+    await QuestionService.deleteQuestion(req.params.id);
+    res.json({ success: true });
+});
+
+// List Tags
+app.get('/api/admin/tags', requireAdmin, async (req, res) => {
+    const tags = await QuestionService.listTags();
+    res.json(tags);
+});
+
+// --- Auth Endpoints ---
 app.post('/api/auth/register', async (req, res) => {
     const { nickname, password, email } = req.body;
     if (!nickname || !password || !email) return res.status(400).json({ error: "Missing fields" });
