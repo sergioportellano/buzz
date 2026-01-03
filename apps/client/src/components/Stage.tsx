@@ -24,7 +24,7 @@ export function Stage({ podiums = 4, players = [] }: { podiums?: number, players
                 // "un letrero con los puntos"
 
                 return (
-                    <group key={i} rotation={[0, 25 * (Math.PI / 180), 0]}>
+                    <group key={i} rotation={[0, 10 * (Math.PI / 180), 0]}>
                         <Podium position={[xLin, 0.5, 1]} score={score} hasPlayer={!!player} />
                     </group>
                 );
