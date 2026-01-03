@@ -83,6 +83,34 @@ export class GameManager {
             }
         });
 
+        socket.on('kick_player', (targetId: string) => {
+            const result = room.kickPlayer(user.id, targetId);
+            if (result.success) {
+                // Find target socket to notify them
+                // We need to store socket references or look them up by user ID?
+                // For now, simpler: broadcast state update (handled by removePlayer)
+                // AND try to find the specific socket to tell them they were kicked.
+                // Since we don't map userId -> socket in GameManager easily without iterating...
+                // We can iterate this.io.sockets.sockets
+
+                // Better: The room has the state. The client side of the kicked player 
+                // will see they are no longer in the room.players list.
+                // BUT we want a specific alert.
+
+                // Let's iterate connected sockets to find the kicked user
+                // This is O(N) where N is total connected users. Fine for small scale.
+                const sockets = this.io.sockets.sockets;
+                for (const [id, s] of sockets) {
+                    const sUser = (s as any).user as UserProfile;
+                    if (sUser && sUser.id === targetId) {
+                        s.emit('kicked', 'You have been kicked from the room.');
+                        s.leave(room.id);
+                        break;
+                    }
+                }
+            }
+        });
+
         // Send initial join success
         socket.emit('room_joined', room.toJSON());
     }

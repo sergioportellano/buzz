@@ -28,6 +28,9 @@ interface GameState {
     addChatMessage: (msg: ChatMessage) => void;
     sendChatMessage: (text: string) => void;
     setLobby: (lobby: any[]) => void;
+
+    // Kick
+    kickPlayer: (targetId: string) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -76,6 +79,11 @@ export const useGameStore = create<GameState>((set) => ({
     sendChatMessage: (text) => {
         const socket = useUserStore.getState().socket;
         if (socket) socket.emit('chat_message', text);
+    },
+
+    kickPlayer: (targetId: string) => {
+        const socket = useUserStore.getState().socket;
+        if (socket) socket.emit('kick_player', targetId);
     }
 }));
 
@@ -91,6 +99,9 @@ export const initGameListeners = () => {
         socket.off('room_joined');
         socket.off('room_error');
         socket.off('state_update');
+        socket.off('chat_broadcast');
+        socket.off('lobby_update');
+        socket.off('kicked');
 
         socket.on('room_joined', (room) => {
             console.log('Joined Room:', room);
@@ -113,6 +124,11 @@ export const initGameListeners = () => {
 
         socket.on('lobby_update', (lobby) => {
             useGameStore.getState().setLobby(lobby);
+        });
+
+        socket.on('kicked', (msg: string) => {
+            alert(msg);
+            useGameStore.getState().leaveRoom();
         });
     });
 };

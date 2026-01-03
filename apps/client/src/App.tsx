@@ -63,6 +63,19 @@ function App() {
                     <div style={{ fontSize: '2rem' }}>{p.avatarId === 'default' ? '👤' : '👽'}</div>
                     <h3>{p.nickname}</h3>
                     <p>{p.score} pts</p>
+                    {room.hostId === user.id && p.id !== user.id && room.state === RoomState.LOBBY && (
+                      <button
+                        onClick={() => useGameStore.getState().kickPlayer(p.id)}
+                        style={{
+                          fontSize: '0.8rem',
+                          padding: '0.2rem 0.5rem',
+                          background: '#d32f2f',
+                          marginTop: '0.5rem'
+                        }}
+                      >
+                        Expulsar
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

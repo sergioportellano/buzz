@@ -123,4 +123,22 @@ export class Room {
         }
         return { success: true };
     }
+
+    kickPlayer(requesterId: string, targetId: string): { success: boolean, message?: string } {
+        if (this.state !== RoomState.LOBBY) {
+            return { success: false, message: "Cannot kick during game" };
+        }
+        if (requesterId !== this.hostId) {
+            return { success: false, message: "Only host can kick" };
+        }
+        if (targetId === this.hostId) {
+            return { success: false, message: "Cannot kick host" };
+        }
+        if (!this.players[targetId]) {
+            return { success: false, message: "Player not found" };
+        }
+
+        this.removePlayer(targetId);
+        return { success: true };
+    }
 }
