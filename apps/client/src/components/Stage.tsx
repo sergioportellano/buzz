@@ -1,18 +1,20 @@
 import { Text } from '@react-three/drei';
+import { GameAsset } from './GameAsset';
+import { Suspense } from 'react';
 
 export function Stage({ podiums = 4 }) {
     return (
         <group position={[0, -2, 0]}>
-            {/* Main Floor */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-                <circleGeometry args={[10, 32]} />
-                <meshStandardMaterial color="#111" roughness={0.5} metalness={0.8} />
-            </mesh>
+            {/* Imported Stage Model */}
+            <Suspense fallback={null}>
+                <GameAsset
+                    path="/models/escenario.glb"
+                    scale={1}
+                    position={[0, 0, 0]}
+                />
+            </Suspense>
 
-            {/* Grid Pattern on Floor */}
-            <gridHelper args={[20, 20, 0x00ffff, 0x222222]} position={[0, 0.01, 0]} />
-
-            {/* Podiums */}
+            {/* Podiums (We keep them generated code-side for dynamic placement) */}
             {Array.from({ length: podiums }).map((_, i) => {
                 // Or simple linear line for MVP
                 const xLin = (i - (podiums - 1) / 2) * 3;
@@ -22,6 +24,7 @@ export function Stage({ podiums = 4 }) {
         </group>
     );
 }
+
 
 function Podium({ position, label }: { position: [number, number, number], label: string }) {
     return (
