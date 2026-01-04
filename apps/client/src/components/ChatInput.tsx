@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { useLanguageStore } from '../i18n/store';
 
 export function ChatInput() {
     const [text, setText] = useState('');
     const sendChatMessage = useGameStore((state) => state.sendChatMessage);
+    const { t } = useLanguageStore();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +39,7 @@ export function ChatInput() {
                             setText(val);
                         }
                     }}
-                    placeholder="Escribe algo..."
+                    placeholder={t('chat.placeholder')}
                     style={{
                         padding: '10px',
                         borderRadius: '10px',
@@ -59,7 +61,7 @@ export function ChatInput() {
                         cursor: 'pointer'
                     }}
                 >
-                    Enviar
+                    {t('chat.send')}
                 </button>
             </form>
         </div>

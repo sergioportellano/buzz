@@ -76,7 +76,17 @@ export const translations = {
         "modal.join": "Unirse",
         "modal.cancel": "Cancelar",
         "modal.code_title": "Introduce Código de Sala",
-        "modal.enter": "ENTRAR"
+        "modal.enter": "ENTRAR",
+
+        // Chat
+        "chat.placeholder": "Escribe algo...",
+        "chat.send": "Enviar",
+
+        // Errors (Client mapping)
+        "error.room_not_found": "Sala no encontrada",
+        "error.password_required": "Contraseña requerida",
+        "error.full": "La sala está llena",
+        "error.generic": "Ocurrió un error"
     },
     en: {
         // App / Room Status
@@ -154,6 +164,16 @@ export const translations = {
         "modal.join": "Join",
         "modal.cancel": "Cancel",
         "modal.code_title": "Enter Room Code",
-        "modal.enter": "ENTER"
+        "modal.enter": "ENTER",
+
+        // Chat
+        "chat.placeholder": "Write something...",
+        "chat.send": "Send",
+
+        // Errors
+        "error.room_not_found": "Room not found",
+        "error.password_required": "Password required",
+        "error.full": "Room is full",
+        "error.generic": "An error occurred"
     }
 };

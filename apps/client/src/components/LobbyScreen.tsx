@@ -455,7 +455,11 @@ export function LobbyScreen() {
                         borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
                         animation: 'fadeIn 0.3s'
                     }}>
-                        ⚠️ {joinError}
+                        ⚠️ {
+                            joinError === 'Sala no encontrada' ? t('error.room_not_found') :
+                                joinError === 'PASSWORD_REQUIRED' ? t('error.password_required') :
+                                    joinError // Fallback to raw string
+                        }
                     </div>
                 )
             }
