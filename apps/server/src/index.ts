@@ -89,7 +89,6 @@ app.put('/api/admin/users/:id', requireAdmin, async (req, res) => {
     } catch (e: any) {
         res.status(400).json({ error: e.message });
     }
-}
 });
 
 // Admin: Delete User
