@@ -46,4 +46,29 @@ export class UserService {
             select: { id: true, gems: true }
         });
     }
+
+    static async deleteUser(userId: string) {
+        return prisma.user.delete({
+            where: { id: userId }
+        });
+    }
+
+    static async resetAndSeedAdmin(adminName: string, adminPass: string) {
+        // Delete all users
+        await prisma.user.deleteMany({});
+
+        // Create Admin
+        const hashedPassword = await bcrypt.hash(adminPass, 10);
+        return prisma.user.create({
+            data: {
+                nickname: adminName,
+                password: hashedPassword,
+                email: 'admin@buzz.com',
+                isAdmin: true,
+                isVerified: true,
+                verificationCode: null,
+                gems: 99999
+            }
+        });
+    }
 }

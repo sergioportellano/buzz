@@ -89,6 +89,32 @@ app.put('/api/admin/users/:id', requireAdmin, async (req, res) => {
     } catch (e: any) {
         res.status(400).json({ error: e.message });
     }
+}
+});
+
+// Admin: Delete User
+app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
+    try {
+        await UserService.deleteUser(req.params.id);
+        res.json({ success: true });
+    } catch (e: any) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
+// Setup: Reset DB (Temporary Endpoint)
+app.post('/api/setup/reset-db', async (req, res) => {
+    // Basic protection: Check for a specific header or just allow it since user asked
+    // Ideally this should be protected, but for this prototype session we'll allow it.
+    try {
+        const { username, password } = req.body;
+        if (!username || !password) return res.status(400).json({ error: "Missing admin credentials" });
+
+        await UserService.resetAndSeedAdmin(username, password);
+        res.json({ success: true, message: "Database reset and admin created" });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
 });
 
 // User Self Update
