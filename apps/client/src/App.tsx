@@ -45,29 +45,43 @@ function App() {
           onClick={() => setLanguage('es')}
           style={{
             opacity: language === 'es' ? 1 : 0.5,
-            fontSize: '1.5rem',
-            background: 'none',
             border: 'none',
+            background: 'none',
             cursor: 'pointer',
-            padding: 0
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center'
           }}
           title="Español"
         >
-          🇪🇸
+          <img
+            src="https://flagcdn.com/w40/es.png"
+            srcSet="https://flagcdn.com/w80/es.png 2x"
+            width="30"
+            alt="Español"
+            style={{ borderRadius: '4px' }}
+          />
         </button>
         <button
           onClick={() => setLanguage('en')}
           style={{
             opacity: language === 'en' ? 1 : 0.5,
-            fontSize: '1.5rem',
-            background: 'none',
             border: 'none',
+            background: 'none',
             cursor: 'pointer',
-            padding: 0
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center'
           }}
           title="English"
         >
-          🇬🇧
+          <img
+            src="https://flagcdn.com/w40/gb.png"
+            srcSet="https://flagcdn.com/w80/gb.png 2x"
+            width="30"
+            alt="English"
+            style={{ borderRadius: '4px' }}
+          />
         </button>
       </div>
 
