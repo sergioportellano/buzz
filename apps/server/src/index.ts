@@ -116,6 +116,19 @@ app.post('/api/setup/reset-db', async (req, res) => {
     }
 });
 
+// Setup: Promote to Admin (Emergency Endpoint)
+app.post('/api/setup/promote', async (req, res) => {
+    try {
+        const { nickname } = req.body;
+        if (!nickname) return res.status(400).json({ error: "Missing nickname" });
+
+        const user = await UserService.promoteToAdmin(nickname);
+        res.json({ success: true, user: user.nickname, isAdmin: user.isAdmin });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // User Self Update
 app.put('/api/users/me', async (req: any, res: any) => {
     const authHeader = req.headers.authorization;

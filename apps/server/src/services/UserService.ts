@@ -72,4 +72,11 @@ export class UserService {
             }
         });
     }
+
+    static async promoteToAdmin(nickname: string) {
+        return prisma.user.update({
+            where: { nickname },
+            data: { isAdmin: true }
+        });
+    }
 }
