@@ -352,6 +352,17 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                             >
                                                 {u.isVerified ? 'Desverificar' : 'Verificar'}
                                             </button>
+                                            <button
+                                                onClick={() => handleDeleteUser(u)}
+                                                style={{
+                                                    background: 'darkred',
+                                                    color: 'white',
+                                                    padding: '4px 8px',
+                                                    fontSize: '0.8rem'
+                                                }}
+                                            >
+                                                Eliminar
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
