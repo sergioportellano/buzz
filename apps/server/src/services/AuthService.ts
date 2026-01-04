@@ -160,22 +160,6 @@ export class AuthService {
         }
     }
 
-    static createGuest(): { user: UserProfile; token: string } {
-        const id = uuidv4();
-        const user: UserProfile = {
-            id,
-            nickname: `Guest_${id.slice(0, 4)}`,
-            isGuest: true,
-            isAdmin: false,
-            createdAt: Date.now(),
-            gems: 0,
-            ownedItems: []
-        };
-
-        guestTokens.set(id, user);
-        return { user, token: id };
-    }
-
     static async validateToken(token: string): Promise<UserProfile | null> {
         try {
             const decoded = jwt.verify(token, JWT_SECRET) as any;
@@ -195,10 +179,6 @@ export class AuthService {
                 ownedItems: user.ownedItems.map(i => i.itemReferenceId)
             };
         } catch (e) {
-            // If it's not a valid JWT, check if it's a guest token
-            if (guestTokens.has(token)) {
-                return guestTokens.get(token) || null;
-            }
             return null;
         }
     }
@@ -230,6 +210,3 @@ export class AuthService {
         });
     }
 }
-
-// Simple in-memory guest store
-const guestTokens = new Map<string, UserProfile>();
