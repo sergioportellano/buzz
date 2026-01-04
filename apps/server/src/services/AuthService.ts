@@ -51,11 +51,13 @@ export class AuthService {
                 return { error: "Nickname already taken" };
             }
 
+            const hashedPassword = await bcrypt.hash(password, 10);
+
             // Create new user if not exists
             const user = await prisma.user.create({
                 data: {
                     nickname,
-                    password, // Plaintext for now as requested
+                    password: hashedPassword,
                     email,
                     isVerified: false,
                     verificationCode: code
@@ -95,6 +97,8 @@ export class AuthService {
                 data: { isVerified: true, verificationCode: null }
             });
 
+            const token = jwt.sign({ userId: updatedUser.id, isAdmin: updatedUser.isAdmin }, JWT_SECRET, { expiresIn: '7d' });
+
             return {
                 user: {
                     id: updatedUser.id,
@@ -106,7 +110,7 @@ export class AuthService {
                     gems: updatedUser.gems,
                     ownedItems: []
                 },
-                token: updatedUser.id
+                token
             };
 
         } catch (e) {
