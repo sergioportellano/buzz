@@ -72,12 +72,28 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <h2>Tienda</h2>
                     <div style={{ background: '#333', padding: '0.5rem 1rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '0.9rem', color: '#aaa' }}>Tu saldo:</span>
                         <span>💎</span>
                         <span style={{ fontWeight: 'bold' }}>{user?.gems || 0}</span>
                     </div>
                 </div>
 
-                <button onClick={onClose} style={{ marginBottom: '1rem', background: 'transparent', border: 'none', color: '#888', cursor: 'pointer' }}>
+                <button
+                    onClick={onClose}
+                    style={{
+                        marginBottom: '1rem',
+                        background: '#ff4444',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '0.5rem',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                    }}
+                >
                     ← Volver
                 </button>
 
