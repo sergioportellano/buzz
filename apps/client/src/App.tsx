@@ -7,10 +7,12 @@ import { GameScene } from './components/GameScene';
 import { ChatInput } from './components/ChatInput';
 import { AuthScreen } from './components/AuthScreen';
 import { LobbyScreen } from './components/LobbyScreen';
+import { useLanguageStore } from './i18n/store';
 
 function App() {
   const { user, connectSocket } = useUserStore();
   const { room, startGame, leaveRoom } = useGameStore();
+  const { language, setLanguage, t } = useLanguageStore();
 
   useEffect(() => {
     // If user is already persisted, connect socket
@@ -26,6 +28,48 @@ function App() {
   return (
     <>
       <GameScene />
+
+      {/* Language Toggle */}
+      <div style={{
+        position: 'fixed',
+        top: '1rem',
+        right: '1rem',
+        zIndex: 1000,
+        display: 'flex',
+        gap: '0.5rem',
+        background: 'rgba(0,0,0,0.5)',
+        padding: '0.5rem',
+        borderRadius: '20px'
+      }}>
+        <button
+          onClick={() => setLanguage('es')}
+          style={{
+            opacity: language === 'es' ? 1 : 0.5,
+            fontSize: '1.5rem',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0
+          }}
+          title="Español"
+        >
+          🇪🇸
+        </button>
+        <button
+          onClick={() => setLanguage('en')}
+          style={{
+            opacity: language === 'en' ? 1 : 0.5,
+            fontSize: '1.5rem',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0
+          }}
+          title="English"
+        >
+          🇬🇧
+        </button>
+      </div>
 
       {showBackground && (
         <div style={{
@@ -48,13 +92,13 @@ function App() {
         room ? (
           <div className="container" style={{ position: 'relative', zIndex: 1 }}>
             <div className="card">
-              <h1>Sala: {room.code}</h1>
+              <h1>{t('app.room')}: {room.code}</h1>
               <div className="status-badge connected">
-                {room.state === 'LOBBY' ? 'EN SALA' :
-                  room.state === 'PRE_ROUND' ? 'PREPARANDO' :
-                    room.state === 'PLAYING' ? 'JUGANDO' :
-                      room.state === 'POST_ROUND' ? 'FIN DE RONDA' :
-                        room.state === 'GAME_OVER' ? 'FIN PARTIDA' : room.state}
+                {room.state === 'LOBBY' ? t('app.status.lobby') :
+                  room.state === 'PRE_ROUND' ? t('app.status.pre_round') :
+                    room.state === 'PLAYING' ? t('app.status.playing') :
+                      room.state === 'POST_ROUND' ? t('app.status.post_round') :
+                        room.state === 'GAME_OVER' ? t('app.status.game_over') : room.state}
               </div>
 
               <div style={{ margin: '2rem 0', display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -73,7 +117,7 @@ function App() {
                           marginTop: '0.5rem'
                         }}
                       >
-                        Expulsar
+                        {t('app.kick')}
                       </button>
                     )}
                   </div>
@@ -89,20 +133,20 @@ function App() {
                     cursor: Object.keys(room.players).length < 2 ? 'not-allowed' : 'pointer'
                   }}
                 >
-                  EMPEZAR PARTIDA {Object.keys(room.players).length < 2 && '(Mín 2 jug.)'}
+                  {t('app.start')} {Object.keys(room.players).length < 2 && t('app.min_players')}
                 </button>
               )}
 
               <button onClick={leaveRoom} style={{ marginTop: '1rem', background: '#333' }}>
-                SALIR DE LA SALA
+                {t('app.leave')}
               </button>
 
               {room.state === RoomState.PRE_ROUND && (
-                <h2>La ronda comienza pronto...</h2>
+                <h2>{t('app.round_soon')}</h2>
               )}
 
               {room.state === RoomState.PLAYING && (
-                <h2>🎵 Música Sonando...</h2>
+                <h2>{t('app.music_playing')}</h2>
               )}
 
             </div>

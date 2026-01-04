@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useUserStore } from '../store/userStore';
+import { useLanguageStore } from '../i18n/store';
 
 export function AuthScreen() {
     const { login, register, verifyAccount } = useUserStore();
+    const { t } = useLanguageStore();
     const [mode, setMode] = useState<'login' | 'register' | 'verify'>('login');
     const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
@@ -24,7 +26,7 @@ export function AuthScreen() {
             const res = await verifyAccount(email, verificationCode);
             setLoading(false);
             if (!res.success) {
-                setError(res.error || 'Falló la verificación');
+                setError(res.error || t('auth.error_verify'));
             }
             return; // If success, user becomes set, App.tsx redirects
         }
@@ -34,10 +36,10 @@ export function AuthScreen() {
             const res = await register(nickname, password, email);
             setLoading(false);
             if (!res.success) {
-                setError(res.error || 'Falló el registro');
+                setError(res.error || t('auth.error_reg'));
             } else if (res.requiresVerification) {
-                const codeMsg = res.debugCode ? ` Código: ${res.debugCode}` : ' Por favor revisa tu correo/consola.';
-                setSuccessMsg(`¡Registro exitoso!${codeMsg} (Modo Desarrollo)`);
+                const codeMsg = res.debugCode ? ` Code: ${res.debugCode}` : t('auth.check_email');
+                setSuccessMsg(`${t('auth.success_reg')}${codeMsg}`);
                 setMode('verify');
             }
             return;
@@ -47,7 +49,7 @@ export function AuthScreen() {
         const res = await login(nickname, password);
         setLoading(false);
         if (!res.success) {
-            setError(res.error || 'Error desconocido');
+            setError(res.error || t('auth.error_unknown'));
         }
     };
 
@@ -63,22 +65,22 @@ export function AuthScreen() {
                             style={{ border: 'none', cursor: 'pointer', fontSize: '1rem' }}
                             onClick={() => { setMode('login'); setError(null); }}
                         >
-                            INICIAR SESIÓN
+                            {t('auth.login')}
                         </button>
                         <button
                             className={mode === 'register' ? 'status-badge connected' : 'status-badge'}
                             style={{ border: 'none', cursor: 'pointer', fontSize: '1rem' }}
                             onClick={() => { setMode('register'); setError(null); }}
                         >
-                            REGISTRARSE
+                            {t('auth.register')}
                         </button>
                     </div>
                 )}
 
                 {mode === 'verify' && (
                     <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                        <h3>Verificar Cuenta</h3>
-                        <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Enviamos un código a {email}</p>
+                        <h3>{t('auth.verify_title')}</h3>
+                        <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t('auth.verify_sent')} {email}</p>
                     </div>
                 )}
 
@@ -88,7 +90,7 @@ export function AuthScreen() {
                     {mode !== 'verify' && (
                         <>
                             <input
-                                placeholder="Usuario"
+                                placeholder={t('auth.placeholder.user')}
                                 value={nickname}
                                 onChange={e => setNickname(e.target.value)}
                                 required
@@ -96,7 +98,7 @@ export function AuthScreen() {
                             />
                             <input
                                 type="password"
-                                placeholder="Contraseña"
+                                placeholder={t('auth.placeholder.pass')}
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
                                 required
@@ -109,7 +111,7 @@ export function AuthScreen() {
                     {mode === 'register' && (
                         <input
                             type="email"
-                            placeholder="Correo Electrónico"
+                            placeholder={t('auth.placeholder.email')}
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             required
@@ -120,7 +122,7 @@ export function AuthScreen() {
                     {/* Verification Field */}
                     {mode === 'verify' && (
                         <input
-                            placeholder="Código de 6 dígitos"
+                            placeholder={t('auth.placeholder.code')}
                             value={verificationCode}
                             onChange={e => setVerificationCode(e.target.value)}
                             required
@@ -137,15 +139,15 @@ export function AuthScreen() {
                         background: mode === 'verify' ? 'var(--color-primary)' : undefined,
                         fontWeight: 'bold'
                     }}>
-                        {loading ? 'Procesando...' : (
-                            mode === 'login' ? 'ENTRAR' :
-                                mode === 'register' ? 'REGISTRARSE' : 'VERIFICAR CÓDIGO'
+                        {loading ? t('auth.processing') : (
+                            mode === 'login' ? t('auth.login') :
+                                mode === 'register' ? t('auth.register') : t('auth.verify_btn')
                         )}
                     </button>
 
                     {mode === 'verify' && (
                         <button type="button" onClick={() => setMode('login')} style={{ background: 'transparent', fontSize: '0.8rem', color: '#888', marginTop: '0.5rem' }}>
-                            Cancelar / Entrar
+                            {t('auth.cancel')}
                         </button>
                     )}
                 </form>
@@ -155,3 +157,4 @@ export function AuthScreen() {
         </div>
     );
 }
+
