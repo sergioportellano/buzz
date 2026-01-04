@@ -169,7 +169,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     if (!user?.isAdmin) return <div style={{ color: 'white', padding: '2rem' }}>Acceso Denegado</div>;
 
     return (
-        <div className="container" style={{ overflowY: 'auto', padding: '2rem', display: 'block', height: '100vh', boxSizing: 'border-box' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1>Panel de Admin</h1>
                 <div style={{ display: 'flex', gap: '1rem' }}>

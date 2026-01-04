@@ -301,7 +301,7 @@ export function LobbyScreen() {
             {/* PROFILE VIEW (Updated) */}
             {
                 view === 'profile' && (
-                    <div className="card" style={{ maxWidth: '500px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
+                    <div className="card" style={{ maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', margin: '0 auto', width: '100%', textAlign: 'center' }}>
                         <BackButton />
                         <div style={{ marginBottom: '2rem' }}>
                             <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>👤</div>
@@ -379,7 +379,7 @@ export function LobbyScreen() {
             {/* ADMIN VIEW */}
             {
                 view === 'admin' && (
-                    <div className="card" style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+                    <div className="card" style={{ maxWidth: '1000px', maxHeight: '90vh', overflowY: 'auto', margin: '0 auto', width: '100%', padding: '1rem' }}>
                         <AdminScreen onBack={() => setView('dashboard')} />
                     </div>
                 )
