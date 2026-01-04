@@ -9,14 +9,24 @@ import { AuthService } from './services/AuthService';
 import { GameManager } from './GameManager';
 
 const app = express();
-app.use(cors());
+const ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://buzz-client-silk.vercel.app"
+];
+
+app.use(cors({
+    origin: ALLOWED_ORIGINS,
+    credentials: true
+}));
 app.use(express.json());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+        origin: ALLOWED_ORIGINS,
+        methods: ["GET", "POST"],
+        credentials: true
     }
 });
 
