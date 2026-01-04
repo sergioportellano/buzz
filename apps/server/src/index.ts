@@ -101,6 +101,40 @@ app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
     }
 });
 
+// Admin: Store Management
+app.get('/api/admin/store', requireAdmin, async (req, res) => {
+    try {
+        const items = await StoreService.getStoreItems(true); // Include inactive
+        res.json(items);
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.put('/api/admin/store/:id', requireAdmin, async (req, res) => {
+    try {
+        const updated = await StoreService.updateItem(req.params.id, req.body);
+        res.json(updated);
+    } catch (e: any) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
+// Admin: Economy (Add/Remove Gems)
+app.post('/api/admin/users/:id/gems', requireAdmin, async (req, res) => {
+    const { amount } = req.body;
+    if (typeof amount !== 'number') return res.status(400).json({ error: "Amount required" });
+
+    try {
+        const updated = await UserService.addGems(req.params.id, amount);
+        res.json(updated);
+    } catch (e: any) {
+        res.status(400).json({ error: e.message });
+    }
+});
+    }
+});
+
 // Setup: Reset DB (Temporary Endpoint)
 app.post('/api/setup/reset-db', async (req, res) => {
     // Basic protection: Check for a specific header or just allow it since user asked

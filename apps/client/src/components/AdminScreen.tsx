@@ -27,12 +27,20 @@ interface UserData {
     email: string;
     isAdmin: boolean;
     isVerified: boolean;
+    gems: number;
     createdAt: string;
+}
+
+interface StoreItem {
+    id: string;
+    name: string;
+    price: number;
+    isActive: boolean;
 }
 
 export function AdminScreen({ onBack }: AdminScreenProps) {
     const { user, token } = useUserStore();
-    const [tab, setTab] = useState<'questions' | 'users'>('questions');
+    const [tab, setTab] = useState<'questions' | 'users' | 'store'>('questions');
 
     // --- Questions State ---
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -46,6 +54,12 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
 
     // --- Users State ---
     const [users, setUsers] = useState<UserData[]>([]);
+    const [gemAmount, setGemAmount] = useState<number>(0);
+    const [selectedUserForGems, setSelectedUserForGems] = useState<UserData | null>(null);
+
+    // --- Store State ---
+    const [storeItems, setStoreItems] = useState<StoreItem[]>([]);
+    const [editingItem, setEditingItem] = useState<StoreItem | null>(null);
 
     // Fetch Data
     const fetchQuestions = async () => {
@@ -66,9 +80,19 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
         } catch (err) { console.error(err); }
     };
 
+    const fetchStore = async () => {
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/store`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) setStoreItems(await res.json());
+        } catch (err) { console.error(err); }
+    };
+
     useEffect(() => {
         if (tab === 'questions') fetchQuestions();
         if (tab === 'users') fetchUsers();
+        if (tab === 'store') fetchStore();
     }, [tab]);
 
     // --- Question Handlers ---
@@ -153,6 +177,28 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
         } catch (err) { console.error(err); }
     }
 
+    const handleAddGems = async () => {
+        if (!selectedUserForGems) return;
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${selectedUserForGems.id}/gems`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount: Number(gemAmount) })
+            });
+
+            if (res.ok) {
+                fetchUsers();
+                setSelectedUserForGems(null);
+                setGemAmount(0);
+            } else {
+                alert("Error al añadir gemas");
+            }
+        } catch (err) { console.error(err); }
+    };
+
     const handleDeleteUser = async (u: UserData) => {
         if (!confirm(`¿ESTÁS SEGURO? Esto eliminará permanentemente a ${u.nickname} y todos sus datos. (NO se puede deshacer)`)) return;
 
@@ -163,6 +209,29 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
             });
             if (res.ok) fetchUsers();
             else alert("Error al eliminar usuario");
+        } catch (err) { console.error(err); }
+    };
+
+    // --- Store Handlers ---
+    const handleUpdateStoreItem = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingItem) return;
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/store/${editingItem.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ price: Number(editingItem.price), isActive: editingItem.isActive })
+            });
+            if (res.ok) {
+                fetchStore();
+                setEditingItem(null);
+            } else {
+                alert("Error al actualizar item");
+            }
         } catch (err) { console.error(err); }
     };
 
@@ -178,6 +247,12 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                         style={{ background: tab === 'questions' ? 'var(--color-primary)' : '#444' }}
                     >
                         Preguntas
+                    </button>
+                    <button
+                        onClick={() => setTab('store')}
+                        style={{ background: tab === 'store' ? 'var(--color-primary)' : '#444' }}
+                    >
+                        Tienda
                     </button>
                     <button
                         onClick={() => setTab('users')}
@@ -303,6 +378,80 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                 </div>
             )}
 
+            {/* --- STORE TAB --- */}
+            {tab === 'store' && (
+                <div className="dashboard-grid">
+                    <div className="card" style={{ gridColumn: 'span 2' }}>
+                        <h2>Gestión de Tienda</h2>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
+                            <thead>
+                                <tr style={{ textAlign: 'left', borderBottom: '1px solid #444' }}>
+                                    <th style={{ padding: '0.5rem' }}>Nombre</th>
+                                    <th>Precio</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {storeItems.map(item => (
+                                    <tr key={item.id} style={{ borderBottom: '1px solid #333' }}>
+                                        <td style={{ padding: '0.8rem 0.5rem' }}>{item.name}</td>
+                                        <td style={{ padding: '0.8rem 0.5rem' }}>{item.price} 💎</td>
+                                        <td style={{ padding: '0.8rem 0.5rem' }}>
+                                            {item.isActive ? '✅ Activo' : '❌ Inactivo'}
+                                        </td>
+                                        <td style={{ padding: '0.8rem 0.5rem' }}>
+                                            <button
+                                                onClick={() => setEditingItem(item)}
+                                                style={{ background: '#444', border: 'none', padding: '0.5rem', cursor: 'pointer', borderRadius: '4px' }}
+                                            >
+                                                Editar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Edit Modal */}
+                    {editingItem && (
+                        <div style={{
+                            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'rgba(0,0,0,0.8)', zIndex: 3000,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                            <div className="card" style={{ width: '300px', padding: '2rem' }}>
+                                <h3>Editar: {editingItem.name}</h3>
+                                <form onSubmit={handleUpdateStoreItem}>
+                                    <label style={{ display: 'block', marginTop: '1rem' }}>
+                                        Precio (Gemas):
+                                        <input
+                                            type="number"
+                                            value={editingItem.price}
+                                            onChange={e => setEditingItem({ ...editingItem, price: Number(e.target.value) })}
+                                            style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
+                                        />
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={editingItem.isActive}
+                                            onChange={e => setEditingItem({ ...editingItem, isActive: e.target.checked })}
+                                        />
+                                        Activo en Tienda
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                                        <button type="submit" style={{ flex: 1, background: 'var(--color-primary)' }}>Guardar</button>
+                                        <button type="button" onClick={() => setEditingItem(null)} style={{ flex: 1, background: '#444' }}>Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* --- USERS TAB --- */}
             {tab === 'users' && (
                 <div className="card">
@@ -313,6 +462,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                 <tr style={{ textAlign: 'left', borderBottom: '1px solid #444' }}>
                                     <th style={{ padding: '0.5rem' }}>Usuario</th>
                                     <th>Email</th>
+                                    <th>Gemas</th>
                                     <th>Rol</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
@@ -323,6 +473,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                     <tr key={u.id} style={{ borderBottom: '1px solid #333' }}>
                                         <td style={{ padding: '0.8rem 0.5rem', fontWeight: 'bold' }}>{u.nickname}</td>
                                         <td style={{ padding: '0.8rem 0.5rem' }}>{u.email}</td>
+                                        <td style={{ padding: '0.8rem 0.5rem', color: '#4fd1c5' }}>{u.gems} 💎</td>
                                         <td style={{ padding: '0.8rem 0.5rem' }}>
                                             {u.isAdmin ? <span style={{ color: 'gold' }}>ADMIN</span> : 'Usuario'}
                                         </td>
@@ -330,6 +481,12 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                             {u.isVerified ? <span style={{ color: 'lime' }}>Verificado</span> : <span style={{ color: 'orange' }}>No Verificado</span>}
                                         </td>
                                         <td style={{ padding: '0.8rem 0.5rem', display: 'flex', gap: '0.5rem' }}>
+                                            <button
+                                                onClick={() => { setSelectedUserForGems(u); setGemAmount(0); }}
+                                                style={{ background: '#4fd1c5', color: 'black', padding: '4px 8px', fontSize: '0.8rem' }}
+                                            >
+                                                Gemas
+                                            </button>
                                             <button
                                                 onClick={() => toggleUserAdmin(u)}
                                                 style={{
@@ -339,18 +496,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                                     fontSize: '0.8rem'
                                                 }}
                                             >
-                                                {u.isAdmin ? 'Quitar Admin' : 'Hacer Admin'}
-                                            </button>
-                                            <button
-                                                onClick={() => toggleUserVerified(u)}
-                                                style={{
-                                                    background: u.isVerified ? '#333' : 'lime',
-                                                    color: u.isVerified ? 'white' : 'black',
-                                                    padding: '4px 8px',
-                                                    fontSize: '0.8rem'
-                                                }}
-                                            >
-                                                {u.isVerified ? 'Desverificar' : 'Verificar'}
+                                                {u.isAdmin ? 'No Admin' : 'Admin'}
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteUser(u)}
@@ -369,6 +515,35 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Manage Gems Modal */}
+                    {selectedUserForGems && (
+                        <div style={{
+                            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'rgba(0,0,0,0.8)', zIndex: 3000,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                            <div className="card" style={{ width: '300px', padding: '2rem' }}>
+                                <h3>Gemas para {selectedUserForGems.nickname}</h3>
+                                <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Actual: {selectedUserForGems.gems} 💎</p>
+
+                                <label style={{ display: 'block', marginTop: '1rem' }}>
+                                    Cantidad a añadir (o restar si es negativo):
+                                    <input
+                                        type="number"
+                                        value={gemAmount}
+                                        onChange={e => setGemAmount(Number(e.target.value))}
+                                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
+                                    />
+                                </label>
+
+                                <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                                    <button onClick={handleAddGems} style={{ flex: 1, background: 'var(--color-primary)' }}>Aplicar</button>
+                                    <button onClick={() => setSelectedUserForGems(null)} style={{ flex: 1, background: '#444' }}>Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

@@ -4,9 +4,9 @@ import { StoreItem, UserProfile } from '@buzz/shared';
 import { StoreItem as PrismaStoreItem } from '@prisma/client';
 
 export class StoreService {
-    static async getStoreItems(): Promise<StoreItem[]> {
+    static async getStoreItems(includeInactive = false): Promise<StoreItem[]> {
         const items = await prisma.storeItem.findMany({
-            where: { isActive: true }
+            where: includeInactive ? {} : { isActive: true }
         });
 
         return items.map(item => ({
@@ -17,6 +17,17 @@ export class StoreService {
             price: item.price,
             isActive: item.isActive
         }));
+    }
+
+    static async updateItem(id: string, data: { price?: number; isActive?: boolean; name?: string }) {
+        return prisma.storeItem.update({
+            where: { id },
+            data: {
+                price: typeof data.price === 'number' ? data.price : undefined,
+                isActive: typeof data.isActive === 'boolean' ? data.isActive : undefined,
+                name: typeof data.name === 'string' ? data.name : undefined
+            }
+        });
     }
 
     static async purchaseItem(userId: string, itemId: string): Promise<{ success: boolean; error?: string; inventory?: string[]; gems?: number }> {
