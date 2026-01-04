@@ -64,17 +64,19 @@ export const translations = {
         "create.launch": "🚀 LANZAR SALA",
 
         // Profile
-        "profile.select_avatar": "Selecciona tu Avatar",
+        "profile.select_avatar": "Selecciona tu personaje",
         "profile.stats": "Estadísticas",
         "profile.stats_soon": "Estadísticas próximamente...",
         "profile.admin_panel": "Panel de Admin",
         "profile.logout": "Cerrar Sesión",
+        "profile.save": "GUARDAR",
 
         // Modals
         "modal.private_title": "🔒 Sala Privada",
         "modal.enter_pass": "Introduce Contraseña",
         "modal.join": "Unirse",
         "modal.cancel": "Cancelar",
+        "modal.character_title": "Elige tu Personaje",
         "modal.code_title": "Introduce Código de Sala",
         "modal.enter": "ENTRAR",
 
@@ -166,19 +168,21 @@ export const translations = {
         "create.launch": "🚀 LAUNCH ROOM",
 
         // Profile
-        "profile.select_avatar": "Select your Avatar",
-        "profile.stats": "Stats",
-        "profile.stats_soon": "Stats coming soon...",
-        "profile.admin_panel": "Admin Panel",
-        "profile.logout": "Log Out",
+        "profile.select_avatar": "Selecciona tu personaje",
+        "profile.stats": "Estadísticas",
+        "profile.stats_soon": "Estadísticas próximamente...",
+        "profile.admin_panel": "Panel de Admin",
+        "profile.logout": "Cerrar Sesión",
+        "profile.save": "GUARDAR",
 
         // Modals
-        "modal.private_title": "🔒 Private Room",
-        "modal.enter_pass": "Enter Password",
-        "modal.join": "Join",
-        "modal.cancel": "Cancel",
-        "modal.code_title": "Enter Room Code",
-        "modal.enter": "ENTER",
+        "modal.private_title": "🔒 Sala Privada",
+        "modal.enter_pass": "Introduce Contraseña",
+        "modal.join": "Unirse",
+        "modal.cancel": "Cancelar",
+        "modal.character_title": "Elige tu Personaje",
+        "modal.code_title": "Introduce Código de Sala",
+        "modal.enter": "ENTRAR",
 
         // Chat
         "chat.placeholder": "Write something...",

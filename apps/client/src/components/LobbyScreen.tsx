@@ -4,6 +4,10 @@ import { useGameStore } from '../store/gameStore';
 import { useUserStore } from '../store/userStore';
 import { AdminScreen } from './AdminScreen';
 import { useLanguageStore } from '../i18n/store';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
+import { GameAsset } from './GameAsset';
+import { Suspense } from 'react';
 
 import { StoreScreen } from './StoreScreen';
 
@@ -27,6 +31,20 @@ export function LobbyScreen() {
     // Manual Join Code Logic
     const [manualCode, setManualCode] = useState('');
     const [showCodeModal, setShowCodeModal] = useState(false);
+
+    // Character Selector State
+    const [showCharacterSelector, setShowCharacterSelector] = useState(false);
+    const [previewIndex, setPreviewIndex] = useState(0);
+
+    const AVATARS = [
+        { id: 'player.glb', name: 'Clásico' },
+        { id: 'tralalero.glb', name: 'Tralalero' },
+        { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur' },
+        { id: 'capuchino.glb', name: 'Cappuccino' }
+    ];
+
+    // Filter to only owned avatars (always include default)
+    const ownedAvatars = AVATARS.filter(a => a.id === 'player.glb' || user?.ownedItems?.includes(a.id));
 
     const { socket } = useUserStore(); // Get socket to trigger fetch when ready
 
@@ -313,44 +331,47 @@ export function LobbyScreen() {
 
                         <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
                             <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>{t('profile.select_avatar')}</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                {[
-                                    { id: 'player.glb', name: 'Clásico', icon: '🤖' },
-                                    { id: 'tralalero.glb', name: 'Tralalero', icon: '👽' },
-                                    { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur', icon: '👺' },
-                                    { id: 'capuchino.glb', name: 'Cappuccino', icon: '☕' }
-                                ].map(avatar => {
-                                    const currentAvatar = user?.avatarModel || 'player.glb';
-                                    const isActive = currentAvatar === avatar.id;
-                                    const owned = isOwned(avatar.id);
 
-                                    return (
-                                        <div
-                                            key={avatar.id}
-                                            onClick={() => {
-                                                if (owned) {
-                                                    useUserStore.getState().updateProfile({ avatarModel: avatar.id });
-                                                }
-                                            }}
-                                            style={{
-                                                border: isActive ? '2px solid var(--color-primary)' : '2px solid transparent',
-                                                background: isActive ? 'rgba(var(--color-primary-rgb), 0.2)' : 'rgba(0,0,0,0.3)',
-                                                borderRadius: '8px',
-                                                padding: '1rem',
-                                                cursor: owned ? 'pointer' : 'default',
-                                                textAlign: 'center',
-                                                opacity: owned ? 1 : 0.5,
-                                                position: 'relative'
-                                            }}
-                                        >
-                                            {!owned && <div style={{ position: 'absolute', top: 5, right: 5 }}>🔒</div>}
-                                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{avatar.icon}</div>
-                                            <div style={{ fontSize: '0.9rem', fontWeight: isActive ? 'bold' : 'normal', color: isActive ? 'var(--color-primary)' : 'white' }}>
-                                                {avatar.name}
-                                            </div>
-                                        </div>
-                                    )
-                                })}
+                            {/* Selected Character Preview (Click to open selector) */}
+                            <div
+                                onClick={() => {
+                                    // Initialize selector with current avatar
+                                    const currentAvatar = user?.avatarModel || 'player.glb';
+                                    const initialIndex = ownedAvatars.findIndex(a => a.id === currentAvatar);
+                                    setPreviewIndex(initialIndex >= 0 ? initialIndex : 0);
+                                    setShowCharacterSelector(true);
+                                }}
+                                style={{
+                                    background: 'rgba(0,0,0,0.3)',
+                                    borderRadius: '8px',
+                                    padding: '1rem',
+                                    cursor: 'pointer',
+                                    textAlign: 'center',
+                                    border: '2px solid transparent',
+                                    transition: 'border 0.2s',
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.border = '2px solid var(--color-primary)'}
+                                onMouseLeave={e => e.currentTarget.style.border = '2px solid transparent'}
+                            >
+                                <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>
+                                    {[
+                                        { id: 'player.glb', icon: '🤖' },
+                                        { id: 'tralalero.glb', icon: '👽' },
+                                        { id: 'tuntunsahur.glb', icon: '👺' },
+                                        { id: 'capuchino.glb', icon: '☕' }
+                                    ].find(a => a.id === (user?.avatarModel || 'player.glb'))?.icon || '👤'}
+                                </div>
+                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                                    {[
+                                        { id: 'player.glb', name: 'Clásico' },
+                                        { id: 'tralalero.glb', name: 'Tralalero' },
+                                        { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur' },
+                                        { id: 'capuchino.glb', name: 'Cappuccino' }
+                                    ].find(a => a.id === (user?.avatarModel || 'player.glb'))?.name || 'Desconocido'}
+                                </div>
+                                <div style={{ fontSize: '0.8rem', color: '#aaa', marginTop: '0.5rem' }}>
+                                    (Clic para cambiar)
+                                </div>
                             </div>
                         </div>
 
@@ -407,6 +428,74 @@ export function LobbyScreen() {
                             <div style={{ display: 'flex', gap: '1rem' }}>
                                 <button onClick={() => { joinRoom(selectedRoom, joinPassword); setSelectedRoom(null); }} style={{ flex: 1 }}>{t('modal.join')}</button>
                                 <button onClick={() => setSelectedRoom(null)} style={{ background: '#444', flex: 1 }}>{t('modal.cancel')}</button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* Character Selector Modal */}
+            {
+                showCharacterSelector && (
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                        background: 'rgba(0,0,0,0.9)', zIndex: 2000,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                        <div className="card" style={{ width: '400px', padding: '2rem', position: 'relative' }}>
+                            <h3 style={{ marginBottom: '1rem', textAlign: 'center' }}>{t('modal.character_title')}</h3>
+
+                            <div style={{ height: '300px', background: '#111', borderRadius: '8px', marginBottom: '1rem', position: 'relative' }}>
+                                <Canvas>
+                                    <PerspectiveCamera makeDefault position={[0, 1.5, 3]} />
+                                    <OrbitControls
+                                        enableZoom={false}
+                                        minPolarAngle={ownedAvatars[previewIndex]?.id === 'tralalero.glb' ? Math.PI / 2 : Math.PI / 4}
+                                        maxPolarAngle={Math.PI / 2}
+                                    />
+                                    <ambientLight intensity={0.5} />
+                                    <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+                                    <Environment preset="city" />
+
+                                    <Suspense fallback={null}>
+                                        <GameAsset
+                                            path={`/models/${ownedAvatars[previewIndex]?.id}`}
+                                            scale={ownedAvatars[previewIndex]?.id === 'capuchino.glb' ? 0.25 : 0.7}
+                                            position={[0, ownedAvatars[previewIndex]?.id === 'tralalero.glb' ? 0 : -1, 0]}
+                                        />
+                                    </Suspense>
+                                </Canvas>
+
+                                {/* Arrows overlay */}
+                                <button
+                                    onClick={() => setPreviewIndex((prev) => (prev - 1 + ownedAvatars.length) % ownedAvatars.length)}
+                                    style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    onClick={() => setPreviewIndex((prev) => (prev + 1) % ownedAvatars.length)}
+                                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    ›
+                                </button>
+                            </div>
+
+                            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                                <h2 style={{ color: 'var(--color-primary)' }}>{ownedAvatars[previewIndex]?.name}</h2>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <button
+                                    onClick={() => {
+                                        useUserStore.getState().updateProfile({ avatarModel: ownedAvatars[previewIndex].id });
+                                        setShowCharacterSelector(false);
+                                    }}
+                                    style={{ flex: 1, background: 'var(--color-primary)' }}
+                                >
+                                    {t('profile.save')}
+                                </button>
+                                <button onClick={() => setShowCharacterSelector(false)} style={{ background: '#444', flex: 1 }}>{t('modal.cancel')}</button>
                             </div>
                         </div>
                     </div>
