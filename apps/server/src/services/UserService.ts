@@ -54,7 +54,8 @@ export class UserService {
     }
 
     static async resetAndSeedAdmin(adminName: string, adminPass: string) {
-        // Delete all users
+        // Delete all data in order
+        await prisma.ownedItem.deleteMany({});
         await prisma.user.deleteMany({});
 
         // Create Admin
