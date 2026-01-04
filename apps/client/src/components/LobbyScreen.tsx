@@ -319,7 +319,7 @@ export function LobbyScreen() {
                     <div className="card" style={{ maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', margin: '0 auto', width: '100%', textAlign: 'center' }}>
                         <BackButton />
                         <div style={{ marginBottom: '2rem' }}>
-                            <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>👤</div>
+
                             <h1>{user?.nickname}</h1>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '0.5rem', fontSize: '1.2rem', color: '#4fd1c5' }}>
                                 {/* @ts-ignore */}
