@@ -351,13 +351,21 @@ export function LobbyScreen() {
                                 onMouseEnter={e => e.currentTarget.style.border = '2px solid var(--color-primary)'}
                                 onMouseLeave={e => e.currentTarget.style.border = '2px solid transparent'}
                             >
-                                <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>
-                                    {[
-                                        { id: 'player.glb', icon: '🤖' },
-                                        { id: 'tralalero.glb', icon: '👽' },
-                                        { id: 'tuntunsahur.glb', icon: '👺' },
-                                        { id: 'capuchino.glb', icon: '☕' }
-                                    ].find(a => a.id === (user?.avatarModel || 'player.glb'))?.icon || '👤'}
+                                <div style={{ height: '150px', marginBottom: '0.5rem' }}>
+                                    <Canvas>
+                                        <PerspectiveCamera makeDefault position={[0, 1, 2.5]} />
+                                        <ambientLight intensity={0.6} />
+                                        <spotLight position={[5, 10, 5]} intensity={1} />
+                                        <Environment preset="city" />
+                                        <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={4} maxPolarAngle={Math.PI / 2} />
+                                        <Suspense fallback={null}>
+                                            <GameAsset
+                                                path={`/models/${user?.avatarModel || 'player.glb'}`}
+                                                scale={(user?.avatarModel === 'capuchino.glb') ? 0.3 : 0.8}
+                                                position={[0, (user?.avatarModel === 'tralalero.glb') ? 0 : -0.9, 0]}
+                                            />
+                                        </Suspense>
+                                    </Canvas>
                                 </div>
                                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
                                     {[
