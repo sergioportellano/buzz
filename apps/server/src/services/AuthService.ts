@@ -102,7 +102,9 @@ export class AuthService {
                     isGuest: false,
                     isAdmin: updatedUser.isAdmin,
                     createdAt: updatedUser.createdAt.getTime(),
-                    avatarModel: updatedUser.avatarModel
+                    avatarModel: updatedUser.avatarModel,
+                    gems: updatedUser.gems,
+                    ownedItems: []
                 },
                 token: updatedUser.id
             };
@@ -165,7 +167,9 @@ export class AuthService {
             nickname: `Guest_${id.slice(0, 4)}`,
             isGuest: true,
             isAdmin: false,
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            gems: 0,
+            ownedItems: []
         };
 
         guestTokens.set(id, user);

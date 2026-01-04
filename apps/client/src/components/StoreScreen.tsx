@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useUserStore } from '../store/userStore';
-import { AVATAR_MODELS } from '@buzz/shared';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
 import { GameAsset } from './GameAsset';

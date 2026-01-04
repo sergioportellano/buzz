@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "scripts": {
         "dev": "tsx watch src/index.ts",
-        "build": "npm run build --prefix ../../packages/shared && tsc"
+        "build": "prisma generate && npm run build --prefix ../../packages/shared && tsc"
     },
     "dependencies": {
         "@buzz/shared": "*",

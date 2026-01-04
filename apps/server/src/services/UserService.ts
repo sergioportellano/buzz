@@ -38,4 +38,12 @@ export class UserService {
             }
         });
     }
+
+    static async addGems(userId: string, amount: number) {
+        return prisma.user.update({
+            where: { id: userId },
+            data: { gems: { increment: amount } },
+            select: { id: true, gems: true }
+        });
+    }
 }
