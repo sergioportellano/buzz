@@ -55,8 +55,7 @@ function App() {
           title="Español"
         >
           <img
-            src="https://flagcdn.com/w40/es.png"
-            srcSet="https://flagcdn.com/w80/es.png 2x"
+            src="/img/es.png"
             width="30"
             alt="Español"
             style={{ borderRadius: '4px' }}
@@ -76,8 +75,7 @@ function App() {
           title="English"
         >
           <img
-            src="https://flagcdn.com/w40/gb.png"
-            srcSet="https://flagcdn.com/w80/gb.png 2x"
+            src="/img/gb.png"
             width="30"
             alt="English"
             style={{ borderRadius: '4px' }}
