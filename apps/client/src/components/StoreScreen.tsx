@@ -89,7 +89,7 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
 
                             return (
                                 <div key={item.id}
-                                    onClick={() => setSelectedItem(item)}
+                                    onClick={() => { setSelectedItem(item); setMessage(null); }}
                                     style={{
                                         background: selected ? '#444' : '#222',
                                         padding: '1rem',
