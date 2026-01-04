@@ -49,7 +49,11 @@ export function AuthScreen() {
         const res = await login(nickname, password);
         setLoading(false);
         if (!res.success) {
-            setError(res.error || t('auth.error_unknown'));
+            if (res.error === "Credenciales inválidas") {
+                setError(t('error.invalid_credentials'));
+            } else {
+                setError(res.error || t('auth.error_unknown'));
+            }
         }
     };
 

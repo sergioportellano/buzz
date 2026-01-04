@@ -86,7 +86,8 @@ export const translations = {
         "error.room_not_found": "Sala no encontrada",
         "error.password_required": "Contraseña requerida",
         "error.full": "La sala está llena",
-        "error.generic": "Ocurrió un error"
+        "error.generic": "Ocurrió un error",
+        "error.invalid_credentials": "Credenciales inválidas"
     },
     en: {
         // App / Room Status
@@ -174,6 +175,7 @@ export const translations = {
         "error.room_not_found": "Room not found",
         "error.password_required": "Password required",
         "error.full": "Room is full",
-        "error.generic": "An error occurred"
+        "error.generic": "An error occurred",
+        "error.invalid_credentials": "Invalid credentials"
     }
 };
