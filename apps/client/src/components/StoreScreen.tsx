@@ -116,7 +116,11 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                 <div style={{ flex: 1 }}>
                     <Canvas>
                         <PerspectiveCamera makeDefault position={[0, 1.5, 3]} />
-                        <OrbitControls enableZoom={false} minPolarAngle={Math.PI / 4} maxPolarAngle={Math.PI / 2} />
+                        <OrbitControls
+                            enableZoom={false}
+                            minPolarAngle={selectedItem?.referenceId === 'tralalero.glb' ? Math.PI / 2 : Math.PI / 4}
+                            maxPolarAngle={Math.PI / 2}
+                        />
                         <ambientLight intensity={0.5} />
                         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
                         <Environment preset="city" />
@@ -125,8 +129,8 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                             {selectedItem && (
                                 <GameAsset
                                     path={`/models/${selectedItem.referenceId}`}
-                                    scale={selectedItem.referenceId === 'capuchino.glb' ? 0.25 : 0.7} // Keep resize logic consistent
-                                    position={[0, -1, 0]}
+                                    scale={selectedItem.referenceId === 'capuchino.glb' ? 0.25 : 0.7}
+                                    position={[0, selectedItem.referenceId === 'tralalero.glb' ? 0 : -1, 0]}
                                 />
                             )}
                         </Suspense>
