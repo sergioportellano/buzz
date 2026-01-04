@@ -87,7 +87,20 @@ export const translations = {
         "error.password_required": "Contraseña requerida",
         "error.full": "La sala está llena",
         "error.generic": "Ocurrió un error",
-        "error.invalid_credentials": "Credenciales inválidas"
+        "error.invalid_credentials": "Credenciales inválidas",
+
+        // Store
+        "store.title": "Tienda",
+        "store.balance": "Tu saldo:",
+        "store.back": "← Volver",
+        "store.loading": "Cargando...",
+        "store.owned": "Ya tienes este artículo",
+        "store.buy_btn": "Comprar Skin",
+        "store.processing": "Comprando...",
+        "store.insufficient": "Gemas Insuficientes",
+        "store.select_item": "Selecciona un artículo para ver detalles",
+        "store.success": "¡Compraste con éxito!",
+        "store.error": "Error al comprar"
     },
     en: {
         // App / Room Status
@@ -176,6 +189,19 @@ export const translations = {
         "error.password_required": "Password required",
         "error.full": "Room is full",
         "error.generic": "An error occurred",
-        "error.invalid_credentials": "Invalid credentials"
+        "error.invalid_credentials": "Invalid credentials",
+
+        // Store
+        "store.title": "Store",
+        "store.balance": "Your balance:",
+        "store.back": "← Back",
+        "store.loading": "Loading...",
+        "store.owned": "You own this item",
+        "store.buy_btn": "Buy Skin",
+        "store.processing": "Buying...",
+        "store.insufficient": "Insufficient Gems",
+        "store.select_item": "Select an item to view details",
+        "store.success": "Purchase successful!",
+        "store.error": "Purchase failed"
     }
 };

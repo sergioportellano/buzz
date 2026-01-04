@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUserStore } from '../store/userStore';
+import { useLanguageStore } from '../i18n/store';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
 import { GameAsset } from './GameAsset';
@@ -17,6 +18,7 @@ interface StoreItem {
 
 export function StoreScreen({ onClose }: { onClose: () => void }) {
     const { user, buyItem } = useUserStore();
+    const { t } = useLanguageStore();
     const [items, setItems] = useState<StoreItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
@@ -47,10 +49,10 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
         setBuying(false);
 
         if (result.success) {
-            setMessage({ text: '¡Compraste con éxito!', type: 'success' });
+            setMessage({ text: t('store.success'), type: 'success' });
             // Refresh owned status implicitly via user store update
         } else {
-            setMessage({ text: result.error || 'Error al comprar', type: 'error' });
+            setMessage({ text: result.error || t('store.error'), type: 'error' });
         }
     };
 
@@ -70,9 +72,9 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
             {/* Left: Item List */}
             <div style={{ width: '40%', padding: '2rem', borderRight: '1px solid #333', overflowY: 'auto' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h2>Tienda</h2>
+                    <h2>{t('store.title')}</h2>
                     <div style={{ background: '#333', padding: '0.5rem 1rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.9rem', color: '#aaa' }}>Tu saldo:</span>
+                        <span style={{ fontSize: '0.9rem', color: '#aaa' }}>{t('store.balance')}</span>
                         <span>💎</span>
                         <span style={{ fontWeight: 'bold' }}>{user?.gems || 0}</span>
                     </div>
@@ -94,10 +96,10 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                         gap: '0.5rem'
                     }}
                 >
-                    ← Volver
+                    {t('store.back')}
                 </button>
 
-                {loading ? <p>Cargando...</p> : (
+                {loading ? <p>{t('store.loading')}</p> : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '1rem' }}>
                         {items.map(item => {
                             const owned = isOwned(item.referenceId);
@@ -159,7 +161,7 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                             <div>
                                 <h2 style={{ margin: 0 }}>{selectedItem.name}</h2>
                                 {isOwned(selectedItem.referenceId) ? (
-                                    <span style={{ color: '#888' }}>Ya tienes este artículo</span>
+                                    <span style={{ color: '#888' }}>{t('store.owned')}</span>
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4fd1c5', fontSize: '1.2rem', marginTop: '0.5rem' }}>
                                         <span>💎</span> {selectedItem.price}
@@ -182,12 +184,12 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                                         cursor: canAfford(selectedItem.price) ? 'pointer' : 'not-allowed',
                                         opacity: buying ? 0.7 : 1
                                     }}>
-                                    {buying ? 'Comprando...' : canAfford(selectedItem.price) ? 'Comprar Skin' : 'Gemas Insuficientes'}
+                                    {buying ? t('store.processing') : canAfford(selectedItem.price) ? t('store.buy_btn') : t('store.insufficient')}
                                 </button>
                             )}
                         </div>
                     ) : (
-                        <p style={{ color: '#888', textAlign: 'center' }}>Selecciona un artículo para ver detalles</p>
+                        <p style={{ color: '#888', textAlign: 'center' }}>{t('store.select_item')}</p>
                     )}
 
                     {message && (
@@ -199,8 +201,7 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                             color: message.type === 'success' ? '#00cc66' : '#ff4444',
                             textAlign: 'center'
                         }}>
-                            {/* Correction: Compraste */}
-                            {message.text.replace('Compusiste', 'Compraste')}
+                            {message.text}
                         </div>
                     )}
                 </div>
