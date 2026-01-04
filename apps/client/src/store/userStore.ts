@@ -9,7 +9,7 @@ interface UserState {
     token: string | null;
     socket: Socket | null;
     timeSync: TimeSync | null;
-    loginGuest: () => Promise<void>;
+
     register: (nickname: string, password: string, email: string) => Promise<{ success: boolean, error?: string, requiresVerification?: boolean, debugCode?: string }>;
     verifyAccount: (email: string, code: string) => Promise<{ success: boolean, error?: string }>;
     login: (nickname: string, password: string) => Promise<{ success: boolean, error?: string }>;
@@ -30,15 +30,7 @@ export const useUserStore = create<UserState>()(
             socket: null,
             timeSync: null,
 
-            loginGuest: async () => {
-                try {
-                    const res = await fetch(`${API_URL}/api/auth/guest`, { method: 'POST' });
-                    const data = await res.json();
-                    set({ user: data.user, token: data.token });
-                } catch (err) {
-                    console.error('Guest Login failed', err);
-                }
-            },
+
 
             register: async (nickname, password, email) => {
                 try {

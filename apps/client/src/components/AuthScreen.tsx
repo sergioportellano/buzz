@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useUserStore } from '../store/userStore';
 
 export function AuthScreen() {
-    const { login, register, loginGuest, verifyAccount } = useUserStore();
+    const { login, register, verifyAccount } = useUserStore();
     const [mode, setMode] = useState<'login' | 'register' | 'verify'>('login');
     const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
@@ -150,13 +150,7 @@ export function AuthScreen() {
                     )}
                 </form>
 
-                {mode !== 'verify' && (
-                    <div style={{ marginTop: '1rem', borderTop: '1px solid #333', paddingTop: '1rem' }}>
-                        <button onClick={loginGuest} style={{ background: 'transparent', border: '1px solid #444' }}>
-                            Jugar como Invitado
-                        </button>
-                    </div>
-                )}
+
             </div>
         </div>
     );

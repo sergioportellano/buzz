@@ -180,10 +180,7 @@ app.post('/api/auth/login', async (req, res) => {
     res.json(result);
 });
 
-app.post('/api/auth/guest', (req, res) => {
-    const result = AuthService.createGuest();
-    res.json(result);
-});
+
 
 app.get('/health', (req, res) => {
     res.send('OK');
