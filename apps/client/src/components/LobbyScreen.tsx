@@ -328,7 +328,7 @@ export function LobbyScreen() {
                         </div>
 
                         <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
-                            <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>✏️ {t('profile.select_avatar')}</h3>
+                            <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem', textAlign: 'center' }}>✏️ {t('profile.select_avatar')}</h3>
 
                             {/* Selected Character Preview (Click to open selector) */}
                             <div
@@ -351,7 +351,7 @@ export function LobbyScreen() {
                                 onMouseEnter={e => e.currentTarget.style.border = '2px solid var(--color-primary)'}
                                 onMouseLeave={e => e.currentTarget.style.border = '2px solid transparent'}
                             >
-                                <div style={{ height: '150px', marginBottom: '0.5rem' }}>
+                                <div style={{ height: '200px', marginBottom: '0.5rem' }}>
                                     <Canvas>
                                         <PerspectiveCamera makeDefault position={[0, 1, 2.5]} />
                                         <ambientLight intensity={0.6} />
@@ -361,8 +361,8 @@ export function LobbyScreen() {
                                         <Suspense fallback={null}>
                                             <GameAsset
                                                 path={`/models/${user?.avatarModel || 'player.glb'}`}
-                                                scale={(user?.avatarModel === 'capuchino.glb') ? 0.3 : 0.8}
-                                                position={[0, (user?.avatarModel === 'tralalero.glb') ? 0 : -0.9, 0]}
+                                                scale={(user?.avatarModel === 'capuchino.glb') ? 0.35 : 0.9}
+                                                position={[0, (user?.avatarModel === 'tralalero.glb') ? 0 : -1.2, 0]}
                                             />
                                         </Suspense>
                                     </Canvas>
@@ -374,9 +374,6 @@ export function LobbyScreen() {
                                         { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur' },
                                         { id: 'capuchino.glb', name: 'Cappuccino' }
                                     ].find(a => a.id === (user?.avatarModel || 'player.glb'))?.name || 'Desconocido'}
-                                </div>
-                                <div style={{ fontSize: '0.8rem', color: '#aaa', marginTop: '0.5rem' }}>
-                                    (Clic para cambiar)
                                 </div>
                             </div>
                         </div>
