@@ -59,15 +59,14 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
 
     return (
         <div style={{
-        < div style={{
-                position: 'fixed', inset: 0,
-                background: 'rgba(0,0,0,0.95)',
-                zIndex: 2000,
-                display: 'flex',
-                flexDirection: 'row',
-                color: 'white',
-                fontFamily: "'Outfit', sans-serif"
-            }}>
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.95)',
+            zIndex: 2000,
+            display: 'flex',
+            flexDirection: 'row',
+            color: 'white',
+            fontFamily: "'Outfit', sans-serif"
+        }}>
             {/* Left: Item List */}
             <div style={{ width: '40%', padding: '2rem', borderRight: '1px solid #333', overflowY: 'auto' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
