@@ -42,7 +42,7 @@ export class GameManager {
     joinRoom(socket: Socket, user: UserProfile, code: string, password?: string) {
         const roomId = this.roomCodes.get(code.toUpperCase());
         if (!roomId) {
-            socket.emit('room_error', 'Room not found');
+            socket.emit('room_error', 'Sala no encontrada');
             return;
         }
         const room = this.rooms.get(roomId);
