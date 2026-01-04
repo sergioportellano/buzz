@@ -9,22 +9,47 @@ import { AuthService } from './services/AuthService';
 import { GameManager } from './GameManager';
 
 const app = express();
+
 const ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
     "https://buzz-client-silk.vercel.app"
 ];
 
-app.use(cors({
-    origin: ALLOWED_ORIGINS,
-    credentials: true
-}));
+// Dynamic CORS Origin Check
+const corsOptions = {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (ALLOWED_ORIGINS.includes(origin) || /https:\/\/buzz-client-.*\.vercel\.app$/.test(origin)) {
+            return callback(null, true);
+        } else {
+            console.warn(`Blocked CORS for origin: ${origin}`);
+            // Ensure we don't break the server, just block connection
+            return callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+// Handle preflight specifically
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: ALLOWED_ORIGINS,
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            if (ALLOWED_ORIGINS.includes(origin) || /https:\/\/buzz-client-.*\.vercel\.app$/.test(origin)) {
+                return callback(null, true);
+            }
+            return callback(new Error('Not allowed by CORS'), false);
+        },
         methods: ["GET", "POST"],
         credentials: true
     }
