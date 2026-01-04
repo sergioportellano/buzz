@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useUserStore } from '../store/userStore';
 import { AdminScreen } from './AdminScreen';
+import { useLanguageStore } from '../i18n/store';
 
 import { StoreScreen } from './StoreScreen';
 
 export function LobbyScreen() {
     const { user, logout } = useUserStore();
     const { createRoom, joinRoom, lobby, getLobby, joinError } = useGameStore();
+    const { t } = useLanguageStore();
 
     // Navigation State
     const [view, setView] = useState<'dashboard' | 'browser' | 'create' | 'profile' | 'admin' | 'store'>('dashboard');
