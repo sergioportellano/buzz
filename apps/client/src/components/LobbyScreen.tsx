@@ -435,15 +435,23 @@ export function LobbyScreen() {
             {/* Character Selector Modal */}
             {
                 showCharacterSelector && (
-                    <div style={{
-                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                        background: 'rgba(0,0,0,0.9)', zIndex: 2000,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                    }}>
-                        <div className="card" style={{ width: '400px', padding: '2rem', position: 'relative' }}>
+                    <div
+                        onClick={() => setShowCharacterSelector(false)} // Click outside to close
+                        style={{
+                            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'rgba(0,0,0,0.9)', zIndex: 2000,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            backdropFilter: 'blur(5px)'
+                        }}
+                    >
+                        <div
+                            className="card"
+                            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                            style={{ width: '400px', padding: '2rem', position: 'relative' }}
+                        >
                             <h3 style={{ marginBottom: '1rem', textAlign: 'center' }}>{t('modal.character_title')}</h3>
 
-                            <div style={{ height: '300px', background: '#111', borderRadius: '8px', marginBottom: '1rem', position: 'relative' }}>
+                            <div style={{ height: '300px', background: '#111', borderRadius: '8px', marginBottom: '1rem', position: 'relative', overflow: 'hidden' }}>
                                 <Canvas>
                                     <PerspectiveCamera makeDefault position={[0, 1.5, 3]} />
                                     <OrbitControls
@@ -458,8 +466,9 @@ export function LobbyScreen() {
                                     <Suspense fallback={null}>
                                         <GameAsset
                                             path={`/models/${ownedAvatars[previewIndex]?.id}`}
-                                            scale={ownedAvatars[previewIndex]?.id === 'capuchino.glb' ? 0.25 : 0.7}
-                                            position={[0, ownedAvatars[previewIndex]?.id === 'tralalero.glb' ? 0 : -1, 0]}
+                                            // Increase scale: capuchino 0.25->0.35, others 0.7->0.9
+                                            scale={ownedAvatars[previewIndex]?.id === 'capuchino.glb' ? 0.35 : 0.9}
+                                            position={[0, ownedAvatars[previewIndex]?.id === 'tralalero.glb' ? 0 : -1.2, 0]}
                                         />
                                     </Suspense>
                                 </Canvas>
@@ -467,13 +476,31 @@ export function LobbyScreen() {
                                 {/* Arrows overlay */}
                                 <button
                                     onClick={() => setPreviewIndex((prev) => (prev - 1 + ownedAvatars.length) % ownedAvatars.length)}
-                                    style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    style={{
+                                        position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)',
+                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        border: '2px solid rgba(255,255,255,0.2)',
+                                        color: 'white', fontSize: '1.5rem', fontWeight: 'bold',
+                                        cursor: 'pointer', borderRadius: '50%', width: '50px', height: '50px',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+                                        padding: 0
+                                    }}
                                 >
                                     ‹
                                 </button>
                                 <button
                                     onClick={() => setPreviewIndex((prev) => (prev + 1) % ownedAvatars.length)}
-                                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    style={{
+                                        position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        border: '2px solid rgba(255,255,255,0.2)',
+                                        color: 'white', fontSize: '1.5rem', fontWeight: 'bold',
+                                        cursor: 'pointer', borderRadius: '50%', width: '50px', height: '50px',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+                                        padding: 0
+                                    }}
                                 >
                                     ›
                                 </button>
@@ -489,11 +516,19 @@ export function LobbyScreen() {
                                         useUserStore.getState().updateProfile({ avatarModel: ownedAvatars[previewIndex].id });
                                         setShowCharacterSelector(false);
                                     }}
-                                    style={{ flex: 1, background: 'var(--color-primary)' }}
+                                    style={{
+                                        flex: 2,
+                                        background: 'linear-gradient(45deg, #00b09b, #96c93d)',
+                                        fontWeight: 'bold',
+                                        fontSize: '1.1rem',
+                                        boxShadow: '0 4px 15px rgba(0,255,0,0.3)',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                                        border: 'none', color: 'white', cursor: 'pointer', padding: '1rem', borderRadius: '8px'
+                                    }}
                                 >
-                                    {t('profile.save')}
+                                    <span>💾</span> {t('profile.save')}
                                 </button>
-                                <button onClick={() => setShowCharacterSelector(false)} style={{ background: '#444', flex: 1 }}>{t('modal.cancel')}</button>
+                                <button onClick={() => setShowCharacterSelector(false)} style={{ background: '#444', flex: 1, border: 'none', color: 'white', cursor: 'pointer', padding: '1rem', borderRadius: '8px' }}>{t('modal.cancel')}</button>
                             </div>
                         </div>
                     </div>
