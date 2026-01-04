@@ -192,12 +192,14 @@ io.use(async (socket, next) => {
     try {
         const user = await AuthService.validateToken(token);
         if (!user) {
+            console.warn(`Socket Auth Failed: No user found for token prefix ${token ? token.substring(0, 6) : 'N/A'}`);
             return next(new Error("Authentication Error"));
         }
         // Attach user to socket
         (socket as any).user = user;
         next();
     } catch (e) {
+        console.error("Socket Auth Error Exception:", e);
         next(new Error("Authentication Error"));
     }
 });

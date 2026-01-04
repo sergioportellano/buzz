@@ -122,16 +122,16 @@ export class AuthService {
             });
 
             if (!user) {
-                return { error: "Invalid credentials" };
+                return { error: "Credenciales inválidas" };
             }
 
             const validCurrent = await bcrypt.compare(password, user.password);
             if (!validCurrent) {
-                return { error: "Invalid credentials" };
+                return { error: "Credenciales inválidas" };
             }
 
             if (!user.isVerified) {
-                return { error: "Account not verified. Please check your email." };
+                return { error: "Cuenta no verificada. Por favor revisa tu correo." };
             }
 
             // Get inventory
@@ -156,7 +156,7 @@ export class AuthService {
             };
         } catch (e) {
             console.error("Login error", e);
-            return { error: "Login failed" };
+            return { error: "Error al iniciar sesión" };
         }
     }
 
@@ -167,7 +167,10 @@ export class AuthService {
                 where: { id: decoded.userId },
                 include: { ownedItems: true } // Include inventory
             });
-            if (!user) return null;
+            if (!user) {
+                console.warn(`Token validation failed: User ${decoded.userId} not found in DB`);
+                return null;
+            }
             return {
                 id: user.id,
                 nickname: user.nickname,
@@ -178,7 +181,8 @@ export class AuthService {
                 gems: user.gems,
                 ownedItems: user.ownedItems.map(i => i.itemReferenceId)
             };
-        } catch (e) {
+        } catch (e: any) {
+            console.error(`Token validation error: ${e.message}`, token ? token.substring(0, 10) + '...' : 'No token');
             return null;
         }
     }
