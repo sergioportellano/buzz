@@ -132,9 +132,6 @@ app.post('/api/admin/users/:id/gems', requireAdmin, async (req, res) => {
         res.status(400).json({ error: e.message });
     }
 });
-    }
-});
-
 // Setup: Reset DB (Temporary Endpoint)
 app.post('/api/setup/reset-db', async (req, res) => {
     // Basic protection: Check for a specific header or just allow it since user asked

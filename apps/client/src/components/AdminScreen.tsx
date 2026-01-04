@@ -499,6 +499,17 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
                                                 {u.isAdmin ? 'No Admin' : 'Admin'}
                                             </button>
                                             <button
+                                                onClick={() => toggleUserVerified(u)}
+                                                style={{
+                                                    background: u.isVerified ? '#333' : 'lime',
+                                                    color: u.isVerified ? 'white' : 'black',
+                                                    padding: '4px 8px',
+                                                    fontSize: '0.8rem'
+                                                }}
+                                            >
+                                                {u.isVerified ? 'Desverificar' : 'Verificar'}
+                                            </button>
+                                            <button
                                                 onClick={() => handleDeleteUser(u)}
                                                 style={{
                                                     background: 'darkred',
