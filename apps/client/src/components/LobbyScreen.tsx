@@ -125,28 +125,253 @@ export function LobbyScreen() {
                     alignItems: 'flex-end',
                     gap: '1.5rem',
                     padding: '0 2rem',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                    boxSizing: 'border-box',
+                    zIndex: 10,
+                    pointerEvents: 'none' // Allow clicking through container
                 }}>
-                    <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
-                        <h3>Estadísticas</h3>
-                        <p style={{ color: '#aaa' }}>Estadísticas próximamente...</p>
+                    <div style={{ display: 'flex', gap: '1.5rem', pointerEvents: 'auto' }}>
+                        {/* 1. Browser */}
+                        <div className="card" onClick={() => setView('browser')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🌍</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>{t('dash.rooms')}</h3>
+                            <div style={{ fontWeight: 'bold', color: 'var(--color-primary)', fontSize: '0.9rem' }}>
+                                {lobby.length} {t('dash.active')}
+                            </div>
+                        </div>
+
+                        {/* 2. Create */}
+                        <div className="card" onClick={() => setView('create')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔨</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>{t('dash.create')}</h3>
+                        </div>
+
+                        {/* 3. Join Code */}
+                        <div className="card" onClick={() => setShowCodeModal(true)} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔢</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>{t('dash.code')}</h3>
+                        </div>
+
+                        {/* 5. STORE (New) */}
+                        <div className="card" onClick={() => setView('store')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s', border: '2px solid gold' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🛒</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>{t('dash.store')}</h3>
+                            <div style={{ color: '#4fd1c5', fontWeight: 'bold' }}>💎 {user?.gems || 0}</div>
+                        </div>
+
+                        {/* 4. Profile */}
+                        <div className="card" onClick={() => setView('profile')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>👤</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>{t('dash.profile')}</h3>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* BROWSER VIEW */}
+            {view === 'browser' && (
+                <div className="card" style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <BackButton />
+                        <button onClick={getLobby} style={{ padding: '0.5rem', fontSize: '0.8rem' }}>{t('lobby.update')}</button>
                     </div>
 
-                    {user?.isAdmin && (
-                        <button
-                            onClick={() => setView('admin')}
-                            style={{ width: '100%', background: 'var(--color-primary)', padding: '1rem', marginBottom: '1rem' }}
-                        >
-                            Panel de Admin
-                        </button>
-                    )}
+                    <h2>{t('lobby.active_rooms')}</h2>
 
-                    <button onClick={logout} style={{ width: '100%', background: '#d32f2f', padding: '1rem' }}>
-                        Cerrar Sesión
-                    </button>
+                    {lobby.length === 0 ? (
+                        <p style={{ color: '#888', fontStyle: 'italic', padding: '2rem', textAlign: 'center' }}>{t('lobby.no_rooms')} <a href="#" onClick={(e) => { e.preventDefault(); setView('create') }} style={{ color: 'var(--color-primary)' }}>{t('lobby.create_one')}</a></p>
+                    ) : (
+                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
+                            <thead>
+                                <tr style={{ textAlign: 'left', borderBottom: '1px solid #444' }}>
+                                    <th style={{ padding: '0.5rem' }}>{t('dash.code')}</th>
+                                    <th style={{ padding: '0.5rem' }}>{t('lobby.host')}</th>
+                                    <th style={{ padding: '0.5rem' }}>{t('lobby.players')}</th>
+                                    <th style={{ padding: '0.5rem' }}>{t('lobby.access')}</th>
+                                    <th style={{ padding: '0.5rem' }}>{t('lobby.action')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lobby.map(r => (
+                                    <tr key={r.id} style={{ borderBottom: '1px solid #333' }}>
+                                        <td style={{ padding: '0.8rem 0.5rem', fontWeight: 'bold' }}>{r.code}</td>
+                                        <td style={{ padding: '0.8rem 0.5rem', fontSize: '0.9rem', color: '#ccc' }}>Sala #{r.id.substring(0, 4)}</td>
+                                        <td style={{ padding: '0.8rem 0.5rem' }}>{r.playerCount} / {r.maxPlayers}</td>
+                                        <td style={{ padding: '0.8rem 0.5rem' }}>
+                                            {r.isPrivate ? <span style={{ color: 'gold' }}>{t('lobby.private')}</span> : <span style={{ color: 'lime' }}>{t('lobby.open')}</span>}
+                                        </td>
+                                        <td style={{ padding: '0.8rem 0.5rem' }}>
+                                            <button
+                                                onClick={() => handleJoin(r.code, r.isPrivate)}
+                                                disabled={r.playerCount >= r.maxPlayers}
+                                                style={{
+                                                    padding: '0.4rem 0.8rem',
+                                                    fontSize: '0.8rem',
+                                                    background: r.playerCount >= r.maxPlayers ? '#333' : 'var(--color-primary)',
+                                                    cursor: r.playerCount >= r.maxPlayers ? 'not-allowed' : 'pointer'
+                                                }}
+                                            >
+                                                {r.playerCount >= r.maxPlayers ? t('lobby.full') : t('lobby.join')}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             )
+            }
+
+            {/* CREATE VIEW */}
+            {
+                view === 'create' && (
+                    <div className="card" style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
+                        <BackButton />
+                        <h2 style={{ marginBottom: '1.5rem', borderBottom: '1px solid #444', paddingBottom: '0.5rem' }}>{t('create.title')}</h2>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>{t('create.max_players')} <span style={{ color: 'var(--color-primary)' }}>{maxPlayers}</span></label>
+                                <input
+                                    type="range" min="2" max="6"
+                                    value={maxPlayers}
+                                    onChange={e => setMaxPlayers(parseInt(e.target.value))}
+                                    style={{ width: '100%', accentColor: 'var(--color-primary)' }}
+                                />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#888' }}>
+                                    <span>2</span><span>6</span>
+                                </div>
+                            </div>
+
+                            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', marginBottom: isPrivate ? '1rem' : 0 }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={isPrivate}
+                                        onChange={e => setIsPrivate(e.target.checked)}
+                                        style={{ width: '20px', height: '20px' }}
+                                    />
+                                    <span style={{ fontSize: '1.1rem' }}>{t('create.private')}</span>
+                                </label>
+
+                                {isPrivate && (
+                                    <input
+                                        placeholder={t('create.pass_placeholder')}
+                                        maxLength={12}
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.8rem',
+                                            background: 'rgba(0,0,0,0.3)',
+                                            border: '1px solid #555',
+                                            color: 'white',
+                                            borderRadius: '4px'
+                                        }}
+                                    />
+                                )}
+                            </div>
+
+                            <button
+                                onClick={handleCreate}
+                                style={{
+                                    padding: '1rem',
+                                    fontSize: '1.2rem',
+                                    fontWeight: 'bold',
+                                    background: 'linear-gradient(45deg, var(--color-primary), #4a90e2)',
+                                    marginTop: '1rem'
+                                }}
+                            >
+                                {t('create.launch')}
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* STORE VIEW */}
+            {
+                view === 'store' && (
+                    <StoreScreen onClose={() => setView('dashboard')} />
+                )
+            }
+
+            {/* PROFILE VIEW (Updated) */}
+            {
+                view === 'profile' && (
+                    <div className="card" style={{ maxWidth: '500px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
+                        <BackButton />
+                        <div style={{ marginBottom: '2rem' }}>
+                            <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>👤</div>
+                            <h1>{user?.nickname}</h1>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '0.5rem', fontSize: '1.2rem', color: '#4fd1c5' }}>
+                                <span>💎</span> <b>{user?.gems || 0}</b>
+                            </div>
+                        </div>
+
+                        <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
+                            <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>{t('profile.select_avatar')}</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                {[
+                                    { id: 'player.glb', name: 'Clásico', icon: '🤖' },
+                                    { id: 'tralalero.glb', name: 'Tralalero', icon: '👽' },
+                                    { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur', icon: '👺' },
+                                    { id: 'capuchino.glb', name: 'Cappuccino', icon: '☕' }
+                                ].map(avatar => {
+                                    const currentAvatar = user?.avatarModel || 'player.glb';
+                                    const isActive = currentAvatar === avatar.id;
+                                    const owned = isOwned(avatar.id);
+
+                                    return (
+                                        <div
+                                            key={avatar.id}
+                                            onClick={() => {
+                                                if (owned) {
+                                                    useUserStore.getState().updateProfile({ avatarModel: avatar.id });
+                                                }
+                                            }}
+                                            style={{
+                                                border: isActive ? '2px solid var(--color-primary)' : '2px solid transparent',
+                                                background: isActive ? 'rgba(var(--color-primary-rgb), 0.2)' : 'rgba(0,0,0,0.3)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                cursor: owned ? 'pointer' : 'default',
+                                                textAlign: 'center',
+                                                opacity: owned ? 1 : 0.5,
+                                                position: 'relative'
+                                            }}
+                                        >
+                                            {!owned && <div style={{ position: 'absolute', top: 5, right: 5 }}>🔒</div>}
+                                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{avatar.icon}</div>
+                                            <div style={{ fontSize: '0.9rem', fontWeight: isActive ? 'bold' : 'normal', color: isActive ? 'var(--color-primary)' : 'white' }}>
+                                                {avatar.name}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+
+                        <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
+                            <h3>{t('profile.stats')}</h3>
+                            <p style={{ color: '#aaa' }}>{t('profile.stats_soon')}</p>
+                        </div>
+
+                        {user?.isAdmin && (
+                            <button
+                                onClick={() => setView('admin')}
+                                style={{ width: '100%', background: 'var(--color-primary)', padding: '1rem', marginBottom: '1rem' }}
+                            >
+                                {t('profile.admin_panel')}
+                            </button>
+                        )}
+
+                        <button onClick={logout} style={{ width: '100%', background: '#d32f2f', padding: '1rem' }}>
+                            {t('profile.logout')}
+                        </button>
+                    </div>
+                )
             }
 
             {/* ADMIN VIEW */}
@@ -169,17 +394,17 @@ export function LobbyScreen() {
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
                         <div className="card" style={{ width: '300px', padding: '2rem' }}>
-                            <h3 style={{ marginBottom: '1rem' }}>🔒 Sala Privada</h3>
+                            <h3 style={{ marginBottom: '1rem' }}>{t('modal.private_title')}</h3>
                             <input
                                 type="password"
                                 value={joinPassword}
                                 onChange={e => setJoinPassword(e.target.value)}
-                                placeholder="Introduce Contraseña"
+                                placeholder={t('modal.enter_pass')}
                                 style={{ width: '100%', marginBottom: '1.5rem', padding: '0.8rem' }}
                             />
                             <div style={{ display: 'flex', gap: '1rem' }}>
-                                <button onClick={() => { joinRoom(selectedRoom, joinPassword); setSelectedRoom(null); }} style={{ flex: 1 }}>Unirse</button>
-                                <button onClick={() => setSelectedRoom(null)} style={{ background: '#444', flex: 1 }}>Cancelar</button>
+                                <button onClick={() => { joinRoom(selectedRoom, joinPassword); setSelectedRoom(null); }} style={{ flex: 1 }}>{t('modal.join')}</button>
+                                <button onClick={() => setSelectedRoom(null)} style={{ background: '#444', flex: 1 }}>{t('modal.cancel')}</button>
                             </div>
                         </div>
                     </div>
@@ -195,7 +420,7 @@ export function LobbyScreen() {
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
                         <div className="card" style={{ width: '300px', padding: '2rem', textAlign: 'center' }}>
-                            <h3 style={{ marginBottom: '1rem' }}>Introduce Código de Sala</h3>
+                            <h3 style={{ marginBottom: '1rem' }}>{t('modal.code_title')}</h3>
                             <input
                                 value={manualCode}
                                 onChange={e => setManualCode(e.target.value.toUpperCase())}
@@ -212,8 +437,8 @@ export function LobbyScreen() {
                                 }}
                             />
                             <div style={{ display: 'flex', gap: '1rem' }}>
-                                <button onClick={handleManualJoin} disabled={manualCode.length !== 4} style={{ flex: 1 }}>ENTRAR</button>
-                                <button onClick={() => setShowCodeModal(false)} style={{ background: '#444', flex: 1 }}>Cancelar</button>
+                                <button onClick={handleManualJoin} disabled={manualCode.length !== 4} style={{ flex: 1 }}>{t('modal.enter')}</button>
+                                <button onClick={() => setShowCodeModal(false)} style={{ background: '#444', flex: 1 }}>{t('modal.cancel')}</button>
                             </div>
                         </div>
                     </div>
