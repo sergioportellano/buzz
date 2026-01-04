@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
 import { UPLOADS_DIR } from './FileService';
-
-const prisma = new PrismaClient();
+import { prisma } from '../db';
 
 export class QuestionService {
     static async createQuestion(data: { text: string; options: string[]; correctOptionIndex: number; tags?: string[] }, file?: Express.Multer.File) {

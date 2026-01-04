@@ -4,12 +4,14 @@ import { useGameStore } from '../store/gameStore';
 import { useUserStore } from '../store/userStore';
 import { AdminScreen } from './AdminScreen';
 
+import { StoreScreen } from './StoreScreen';
+
 export function LobbyScreen() {
     const { user, logout } = useUserStore();
     const { createRoom, joinRoom, lobby, getLobby, joinError } = useGameStore();
 
     // Navigation State
-    const [view, setView] = useState<'dashboard' | 'browser' | 'create' | 'profile' | 'admin'>('dashboard');
+    const [view, setView] = useState<'dashboard' | 'browser' | 'create' | 'profile' | 'admin' | 'store'>('dashboard');
 
     // Create Form State
     const [maxPlayers, setMaxPlayers] = useState(4);
@@ -101,9 +103,15 @@ export function LobbyScreen() {
         </button>
     );
 
+    // Helper to check ownership
+    const isOwned = (modelId: string) => {
+        if (modelId === 'player.glb') return true;
+        // @ts-ignore
+        return user?.ownedItems?.includes(modelId);
+    };
+
     return (
         <div className="container" style={{ position: 'relative', zIndex: 1, padding: '2rem' }}>
-
 
             {/* DASHBOARD VIEW */}
             {view === 'dashboard' && (
@@ -111,177 +119,69 @@ export function LobbyScreen() {
                     position: 'fixed',
                     bottom: '2rem',
                     left: 0,
-                    width: '100%',
+                    right: 0,
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'flex-end',
                     gap: '1.5rem',
                     padding: '0 2rem',
                     boxSizing: 'border-box',
-                    zIndex: 10
+                    zIndex: 10,
+                    pointerEvents: 'none' // Allow clicking through container
                 }}>
-
-                    {/* 1. Browser */}
-                    <div className="card" onClick={() => setView('browser')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', flex: '0 1 250px', minWidth: '180px', transition: 'transform 0.2s' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🌍</div>
-                        <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Salas Públicas</h3>
-                        <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>Explora partidas activas</p>
-                        <div style={{ marginTop: '0.5rem', fontWeight: 'bold', color: 'var(--color-primary)', fontSize: '0.9rem' }}>
-                            {lobby.length} Salas Activas
-                        </div>
-                    </div>
-
-                    {/* 2. Create */}
-                    <div className="card" onClick={() => setView('create')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', flex: '0 1 250px', minWidth: '180px', transition: 'transform 0.2s' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔨</div>
-                        <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Crear Sala</h3>
-                        <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>Crea tu propia partida</p>
-                    </div>
-
-                    {/* 3. Join Code */}
-                    <div className="card" onClick={() => setShowCodeModal(true)} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', flex: '0 1 250px', minWidth: '180px', transition: 'transform 0.2s' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔢</div>
-                        <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Unirse con Código</h3>
-                        <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>Introduce código</p>
-                    </div>
-
-                    {/* 4. Profile */}
-                    <div className="card" onClick={() => setView('profile')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', flex: '0 1 250px', minWidth: '180px', transition: 'transform 0.2s' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>👤</div>
-                        <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Mi Perfil</h3>
-                        <p style={{ color: '#aaa', fontSize: '0.9rem', margin: 0 }}>Gestionar cuenta</p>
-                    </div>
-
-                </div>
-            )}
-
-            {/* BROWSER VIEW */}
-            {view === 'browser' && (
-                <div className="card" style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                        <BackButton />
-                        <button onClick={getLobby} style={{ padding: '0.5rem', fontSize: '0.8rem' }}>↻ Actualizar</button>
-                    </div>
-
-                    <h2>Salas Activas</h2>
-
-                    {lobby.length === 0 ? (
-                        <p style={{ color: '#888', fontStyle: 'italic', padding: '2rem', textAlign: 'center' }}>No se encontraron salas activas. <a href="#" onClick={(e) => { e.preventDefault(); setView('create') }} style={{ color: 'var(--color-primary)' }}>¡Crea una!</a></p>
-                    ) : (
-                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
-                            <thead>
-                                <tr style={{ textAlign: 'left', borderBottom: '1px solid #444' }}>
-                                    <th style={{ padding: '0.5rem' }}>Código</th>
-                                    <th style={{ padding: '0.5rem' }}>Anfitrión</th>
-                                    <th style={{ padding: '0.5rem' }}>Jugadores</th>
-                                    <th style={{ padding: '0.5rem' }}>Acceso</th>
-                                    <th style={{ padding: '0.5rem' }}>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {lobby.map(r => (
-                                    <tr key={r.id} style={{ borderBottom: '1px solid #333' }}>
-                                        <td style={{ padding: '0.8rem 0.5rem', fontWeight: 'bold' }}>{r.code}</td>
-                                        <td style={{ padding: '0.8rem 0.5rem', fontSize: '0.9rem', color: '#ccc' }}>Sala #{r.id.substring(0, 4)}</td>
-                                        <td style={{ padding: '0.8rem 0.5rem' }}>{r.playerCount} / {r.maxPlayers}</td>
-                                        <td style={{ padding: '0.8rem 0.5rem' }}>
-                                            {r.isPrivate ? <span style={{ color: 'gold' }}>🔒 Privada</span> : <span style={{ color: 'lime' }}>Abierta</span>}
-                                        </td>
-                                        <td style={{ padding: '0.8rem 0.5rem' }}>
-                                            <button
-                                                onClick={() => handleJoin(r.code, r.isPrivate)}
-                                                disabled={r.playerCount >= r.maxPlayers}
-                                                style={{
-                                                    padding: '0.4rem 0.8rem',
-                                                    fontSize: '0.8rem',
-                                                    background: r.playerCount >= r.maxPlayers ? '#333' : 'var(--color-primary)',
-                                                    cursor: r.playerCount >= r.maxPlayers ? 'not-allowed' : 'pointer'
-                                                }}
-                                            >
-                                                {r.playerCount >= r.maxPlayers ? 'LLENA' : 'UNIRSE'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
-                </div>
-            )}
-
-            {/* CREATE VIEW */}
-            {view === 'create' && (
-                <div className="card" style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
-                    <BackButton />
-                    <h2 style={{ marginBottom: '1.5rem', borderBottom: '1px solid #444', paddingBottom: '0.5rem' }}>Crear Nueva Sala</h2>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Máx. Jugadores: <span style={{ color: 'var(--color-primary)' }}>{maxPlayers}</span></label>
-                            <input
-                                type="range" min="2" max="6"
-                                value={maxPlayers}
-                                onChange={e => setMaxPlayers(parseInt(e.target.value))}
-                                style={{ width: '100%', accentColor: 'var(--color-primary)' }}
-                            />
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#888' }}>
-                                <span>2</span><span>6</span>
+                    <div style={{ display: 'flex', gap: '1.5rem', pointerEvents: 'auto' }}>
+                        {/* 1. Browser */}
+                        <div className="card" onClick={() => setView('browser')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🌍</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Salas</h3>
+                            <div style={{ fontWeight: 'bold', color: 'var(--color-primary)', fontSize: '0.9rem' }}>
+                                {lobby.length} Activas
                             </div>
                         </div>
 
-                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', marginBottom: isPrivate ? '1rem' : 0 }}>
-                                <input
-                                    type="checkbox"
-                                    checked={isPrivate}
-                                    onChange={e => setIsPrivate(e.target.checked)}
-                                    style={{ width: '20px', height: '20px' }}
-                                />
-                                <span style={{ fontSize: '1.1rem' }}>Sala Privada (Contraseña)</span>
-                            </label>
-
-                            {isPrivate && (
-                                <input
-                                    placeholder="Contraseña de la Sala..."
-                                    maxLength={12}
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.8rem',
-                                        background: 'rgba(0,0,0,0.3)',
-                                        border: '1px solid #555',
-                                        color: 'white',
-                                        borderRadius: '4px'
-                                    }}
-                                />
-                            )}
+                        {/* 2. Create */}
+                        <div className="card" onClick={() => setView('create')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔨</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Crear</h3>
                         </div>
 
-                        <button
-                            onClick={handleCreate}
-                            style={{
-                                padding: '1rem',
-                                fontSize: '1.2rem',
-                                fontWeight: 'bold',
-                                background: 'linear-gradient(45deg, var(--color-primary), #4a90e2)',
-                                marginTop: '1rem'
-                            }}
-                        >
-                            🚀 LANZAR SALA
-                        </button>
+                        {/* 3. Join Code */}
+                        <div className="card" onClick={() => setShowCodeModal(true)} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔢</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Código</h3>
+                        </div>
+
+                        {/* 5. STORE (New) */}
+                        <div className="card" onClick={() => setView('store')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s', border: '2px solid gold' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🛒</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Tienda</h3>
+                            <div style={{ color: '#4fd1c5', fontWeight: 'bold' }}>💎 {user?.gems || 0}</div>
+                        </div>
+
+                        {/* 4. Profile */}
+                        <div className="card" onClick={() => setView('profile')} style={{ cursor: 'pointer', textAlign: 'center', padding: '1.5rem 1rem', width: '180px', transition: 'transform 0.2s' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>👤</div>
+                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>Perfil</h3>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* PROFILE VIEW */}
+            {/* STORE VIEW */}
+            {view === 'store' && (
+                <StoreScreen onClose={() => setView('dashboard')} />
+            )}
+
+            {/* PROFILE VIEW (Updated) */}
             {view === 'profile' && (
                 <div className="card" style={{ maxWidth: '500px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
                     <BackButton />
                     <div style={{ marginBottom: '2rem' }}>
                         <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>👤</div>
                         <h1>{user?.nickname}</h1>
-                        <p style={{ color: '#888', fontFamily: 'monospace' }}>ID: {user?.id}</p>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '0.5rem', fontSize: '1.2rem', color: '#4fd1c5' }}>
+                            <span>💎</span> <b>{user?.gems || 0}</b>
+                        </div>
                     </div>
 
                     <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
@@ -291,44 +191,42 @@ export function LobbyScreen() {
                                 { id: 'player.glb', name: 'Clásico', icon: '🤖' },
                                 { id: 'tralalero.glb', name: 'Tralalero', icon: '👽' },
                                 { id: 'tuntunsahur.glb', name: 'Tun Tun Sahur', icon: '👺' },
-                                { id: 'capuchino.glb', name: 'Cappuccino Assassino', icon: '☕' }
+                                { id: 'capuchino.glb', name: 'Cappuccino', icon: '☕' }
                             ].map(avatar => {
                                 const currentAvatar = user?.avatarModel || 'player.glb';
                                 const isActive = currentAvatar === avatar.id;
+                                const owned = isOwned(avatar.id);
 
                                 return (
                                     <div
                                         key={avatar.id}
                                         onClick={() => {
-                                            // Optimistic update could be handled here or just wait for server
-                                            // We'll trust the store update for now but make the UI clearer
-                                            useUserStore.getState().updateProfile({ avatarModel: avatar.id });
+                                            if (owned) {
+                                                useUserStore.getState().updateProfile({ avatarModel: avatar.id });
+                                            }
                                         }}
                                         style={{
                                             border: isActive ? '2px solid var(--color-primary)' : '2px solid transparent',
-                                            background: isActive ? 'rgba(var(--color-primary-rgb), 0.2)' : 'rgba(0,0,0,0.3)', // Needs RGB var or just use hex opacity
-                                            backgroundColor: isActive ? '#1a3a2a' : 'rgba(0,0,0,0.3)', // Fallback dark green for active
+                                            background: isActive ? 'rgba(var(--color-primary-rgb), 0.2)' : 'rgba(0,0,0,0.3)',
                                             borderRadius: '8px',
                                             padding: '1rem',
-                                            cursor: 'pointer',
+                                            cursor: owned ? 'pointer' : 'default',
                                             textAlign: 'center',
-                                            transition: 'all 0.2s',
-                                            transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                                            boxShadow: isActive ? '0 0 15px rgba(0, 255, 0, 0.2)' : 'none'
+                                            opacity: owned ? 1 : 0.5,
+                                            position: 'relative'
                                         }}
                                     >
-                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-                                            {avatar.icon}
-                                        </div>
+                                        {!owned && <div style={{ position: 'absolute', top: 5, right: 5 }}>🔒</div>}
+                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{avatar.icon}</div>
                                         <div style={{ fontSize: '0.9rem', fontWeight: isActive ? 'bold' : 'normal', color: isActive ? 'var(--color-primary)' : 'white' }}>
                                             {avatar.name}
-                                            {isActive && ' (Seleccionado)'}
                                         </div>
                                     </div>
                                 )
                             })}
                         </div>
                     </div>
+
 
                     <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
                         <h3>Estadísticas</h3>

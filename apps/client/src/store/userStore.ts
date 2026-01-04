@@ -15,7 +15,9 @@ interface UserState {
     login: (nickname: string, password: string) => Promise<{ success: boolean, error?: string }>;
     logout: () => void;
     connectSocket: () => void;
-    updateProfile: (data: { avatarModel: string }) => Promise<{ success: boolean, error?: string }>;
+    updateProfile: (data: { nickname?: string; avatarModel?: string }) => Promise<{ success: boolean, error?: string }>;
+    fetchUser: () => Promise<{ success: boolean, error?: string }>;
+    buyItem: (itemId: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -100,10 +102,10 @@ export const useUserStore = create<UserState>()(
             },
 
             updateProfile: async (data) => {
-                try {
-                    const { token } = get();
-                    if (!token) return { success: false, error: "Not logged in" };
+                const { token, user } = get();
+                if (!token) return { success: false, error: "Not logged in" };
 
+                try {
                     const res = await fetch(`${API_URL}/api/users/me`, {
                         method: 'PUT',
                         headers: {
@@ -112,25 +114,89 @@ export const useUserStore = create<UserState>()(
                         },
                         body: JSON.stringify(data)
                     });
-                    const updatedUser = await res.json();
-                    if (updatedUser.error) return { success: false, error: updatedUser.error };
 
-                    set({ user: updatedUser });
+                    if (res.ok) {
+                        const updatedUser = await res.json();
+                        // Merge updated fields
+                        set({ user: { ...user, ...updatedUser } as UserProfile });
 
-                    // Force socket reconnect to update session user data on server
-                    const { socket } = get();
-                    if (socket) {
-                        socket.disconnect();
-                        set({ socket: null }); // CLEAR SOCKET STATE so connectSocket() can run
-                        // Give a tiny tick for state to update or just run it
-                        setTimeout(() => get().connectSocket(), 100);
+                        // Force socket reconnect to update server state
+                        const { socket } = get();
+                        if (socket) {
+                            socket.disconnect();
+                            set({ socket: null });
+                            setTimeout(() => {
+                                get().connectSocket();
+                            }, 100);
+                        }
+                        return { success: true };
                     } else {
-                        get().connectSocket();
+                        const errorData = await res.json();
+                        return { success: false, error: errorData.error || "Failed to update profile" };
                     }
+                } catch (e: any) {
+                    console.error("Failed to update profile", e);
+                    return { success: false, error: e.message || "Network Error" };
+                }
+            },
 
-                    return { success: true };
-                } catch (err) {
-                    return { success: false, error: "Network Error" };
+            fetchUser: async () => {
+                const { token } = get();
+                if (!token) return { success: false, error: "Not logged in" };
+                try {
+                    const res = await fetch(`${API_URL}/api/auth/validate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.valid) {
+                            set({ user: data.user });
+                            return { success: true };
+                        } else {
+                            return { success: false, error: data.error || "Invalid token" };
+                        }
+                    } else {
+                        const errorData = await res.json();
+                        return { success: false, error: errorData.error || "Failed to fetch user" };
+                    }
+                } catch (e: any) {
+                    console.error(e);
+                    return { success: false, error: e.message || "Network Error" };
+                }
+            },
+
+            buyItem: async (itemId: string) => {
+                const { token, user } = get();
+                if (!token) return { success: false, error: "Not logged in" };
+
+                try {
+                    const res = await fetch(`${API_URL}/api/store/buy`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ itemId })
+                    });
+
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        // Update local user state
+                        set({
+                            user: {
+                                ...user,
+                                gems: data.gems,
+                                ownedItems: data.inventory
+                            } as UserProfile
+                        });
+                        return { success: true };
+                    } else {
+                        return { success: false, error: data.error };
+                    }
+                } catch (e: any) {
+                    return { success: false, error: e.message || "Network Error" };
                 }
             },
 

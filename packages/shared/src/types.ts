@@ -4,7 +4,18 @@ export interface UserProfile {
     isGuest: boolean;
     isAdmin?: boolean;
     createdAt: number;
-    avatarModel?: string;
+    avatarModel?: string; // e.g. 'player.glb'
+    gems: number;
+    ownedItems: string[]; // List of referenceIds (e.g. ['player.glb', 'tralalero.glb'])
+}
+
+export interface StoreItem {
+    id: string;
+    type: 'SKIN' | 'BUNDLE';
+    referenceId: string;
+    name: string;
+    price: number;
+    isActive: boolean;
 }
 
 export const AVATAR_MODELS = [

@@ -21,8 +21,32 @@ model User {
   avatarModel    String   @default("player.glb")
   createdAt DateTime @default(now())
   
+  // Economy
+  gems           Int         @default(0)
+  ownedItems     OwnedItem[]
+  
   // Future extensions
   // matches Match[]
+}
+
+model OwnedItem {
+  id              String   @id @default(uuid())
+  user            User     @relation(fields: [userId], references: [id])
+  userId          String
+  itemReferenceId String   // e.g. "tralalero.glb"
+  acquiredAt      DateTime @default(now())
+
+  @@unique([userId, itemReferenceId])
+}
+
+model StoreItem {
+  id          String   @id @default(uuid())
+  type        String   // "SKIN"
+  referenceId String   // "tralalero.glb"
+  name        String
+  price       Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
 }
 
 model Question {

@@ -1,9 +1,13 @@
+import { prisma } from '../db';
 import { UserProfile } from '@buzz/shared';
+import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcryptjs';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaClient } from '@prisma/client';
 import { EmailService } from './EmailService';
 
-const prisma = new PrismaClient();
 
 export class AuthService {
     static async register(nickname: string, password: string, email: string): Promise<{ user?: UserProfile; token?: string; error?: string; requiresVerification?: boolean; debugCode?: string }> {
@@ -115,7 +119,12 @@ export class AuthService {
                 where: { nickname }
             });
 
-            if (!user || user.password !== password) {
+            if (!user) {
+                return { error: "Invalid credentials" };
+            }
+
+            const validCurrent = await bcrypt.compare(password, user.password);
+            if (!validCurrent) {
                 return { error: "Invalid credentials" };
             }
 
@@ -123,16 +132,25 @@ export class AuthService {
                 return { error: "Account not verified. Please check your email." };
             }
 
+            // Get inventory
+            const userWithItems = await prisma.user.findUnique({
+                where: { id: user.id },
+                include: { ownedItems: true }
+            });
+
+            const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '7d' });
             return {
+                token,
                 user: {
                     id: user.id,
                     nickname: user.nickname,
                     isGuest: false,
                     isAdmin: user.isAdmin,
                     createdAt: user.createdAt.getTime(),
-                    avatarModel: user.avatarModel
-                },
-                token: user.id
+                    avatarModel: user.avatarModel,
+                    gems: user.gems,
+                    ownedItems: userWithItems?.ownedItems.map(i => i.itemReferenceId) || []
+                }
             };
         } catch (e) {
             console.error("Login error", e);
@@ -155,25 +173,57 @@ export class AuthService {
     }
 
     static async validateToken(token: string): Promise<UserProfile | null> {
-        if (guestTokens.has(token)) {
-            return guestTokens.get(token) || null;
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { id: token }
-        });
-
-        if (user) {
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET) as any;
+            const user = await prisma.user.findUnique({
+                where: { id: decoded.userId },
+                include: { ownedItems: true } // Include inventory
+            });
+            if (!user) return null;
             return {
                 id: user.id,
                 nickname: user.nickname,
                 isGuest: false,
                 isAdmin: user.isAdmin,
                 createdAt: user.createdAt.getTime(),
-                avatarModel: user.avatarModel
+                avatarModel: user.avatarModel,
+                gems: user.gems,
+                ownedItems: user.ownedItems.map(i => i.itemReferenceId)
             };
+        } catch (e) {
+            // If it's not a valid JWT, check if it's a guest token
+            if (guestTokens.has(token)) {
+                return guestTokens.get(token) || null;
+            }
+            return null;
         }
-        return null;
+    }
+
+    // Existing updateProfile logic needs a check
+    static async updateProfile(userId: string, data: { avatarModel?: string }) {
+        // 1. If avatar is changing, check ownership
+        if (data.avatarModel) {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                include: { ownedItems: true }
+            });
+
+            if (!user) throw new Error("User not found");
+
+            // Allow default player.glb always
+            const isDefault = data.avatarModel === 'player.glb';
+            const hasItem = user.ownedItems.some(i => i.itemReferenceId === data.avatarModel);
+
+            if (!isDefault && !hasItem) {
+                throw new Error("You do not own this avatar");
+            }
+        }
+
+        return prisma.user.update({
+            where: { id: userId },
+            data: { avatarModel: data.avatarModel },
+            select: { id: true, avatarModel: true }
+        });
     }
 }
 

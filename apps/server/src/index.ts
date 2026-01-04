@@ -27,15 +27,29 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 // --- Admin Endpoints ---
 import { QuestionService } from './services/QuestionService';
 import { UserService } from './services/UserService';
+import { StoreService } from './services/StoreService';
 import { upload } from './services/FileService';
+// Middleware
+const authenticateToken = async (req: any, res: any, next: any) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "No token" });
+    const token = authHeader.split(" ")[1];
 
-// Middleware to check Admin
+    // We can reuse AuthService.validateToken, but it returns UserProfile | null
+    // Here we want to attach user to req
+    const user = await AuthService.validateToken(token);
+    if (!user) return res.status(403).json({ error: "Invalid token" });
+    req.user = user;
+    next();
+};
+
 const requireAdmin = async (req: any, res: any, next: any) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) return res.status(401).json({ error: "No token" });
-    const token = authHeader.split(" ")[1]; // Bearer <id>
+    const token = authHeader.split(" ")[1];
     const user = await AuthService.validateToken(token);
     if (!user || !user.isAdmin) return res.status(403).json({ error: "Forbidden" });
+    req.user = user;
     next();
 };
 
@@ -185,7 +199,60 @@ io.on('connection', (socket) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, () => {
+// Store Routes
+app.get('/api/store', async (req, res) => {
+    try {
+        const items = await StoreService.getStoreItems();
+        res.json(items);
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/store/buy', authenticateToken, async (req: any, res) => {
+    const { itemId } = req.body;
+    if (!itemId) return res.status(400).json({ error: 'Missing itemId' });
+
+    try {
+        const result = await StoreService.purchaseItem(req.user.id, itemId);
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(400).json({ error: result.error });
+        }
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Admin: Grant Gems
+app.post('/api/admin/users/:id/gems', requireAdmin, async (req, res) => {
+    const { amount } = req.body;
+    try {
+        const result = await UserService.addGems(req.params.id, Number(amount));
+        res.json(result);
+    } catch (e: any) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
+// Admin: Seed Store
+app.post('/api/admin/store/seed', requireAdmin, async (req, res) => {
+    try {
+        await StoreService.seedDefaultItems();
+        res.json({ success: true });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+const PORT = process.env.PORT || 3001;
+httpServer.listen(PORT, async () => {
     console.log(`Server v${VERSION} running on port ${PORT}`);
+    // Auto-seed store
+    try {
+        await StoreService.seedDefaultItems();
+    } catch (e) {
+        console.error("Failed to seed store:", e);
+    }
 });
