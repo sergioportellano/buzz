@@ -9,47 +9,31 @@ import { AuthService } from './services/AuthService';
 import { GameManager } from './GameManager';
 
 const app = express();
+app.enable('trust proxy'); // Important for Railway/Proxies
 
-const ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://buzz-client-silk.vercel.app"
-];
-
-// Dynamic CORS Origin Check
-const corsOptions = {
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-
-        if (ALLOWED_ORIGINS.includes(origin) || /https:\/\/buzz-client-.*\.vercel\.app$/.test(origin)) {
-            return callback(null, true);
-        } else {
-            console.warn(`Blocked CORS for origin: ${origin}`);
-            // Ensure we don't break the server, just block connection
-            return callback(new Error('Not allowed by CORS'));
-        }
-    },
+// Permissive CORS for debugging
+app.use(cors({
+    origin: true, // Reflects the request origin
     credentials: true,
-    optionsSuccessStatus: 200
-};
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
-app.use(cors(corsOptions));
-// Handle preflight specifically
-app.options('*', cors(corsOptions));
+// Handle preflight explicitly
+app.options('*', cors({ origin: true, credentials: true }));
 
 app.use(express.json());
+
+// Global Error Handler to properly respond with JSON/CORS headers
+app.use((err: any, req: any, res: any, next: any) => {
+    console.error("Unhandled Error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+});
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: (origin, callback) => {
-            if (!origin) return callback(null, true);
-            if (ALLOWED_ORIGINS.includes(origin) || /https:\/\/buzz-client-.*\.vercel\.app$/.test(origin)) {
-                return callback(null, true);
-            }
-            return callback(new Error('Not allowed by CORS'), false);
-        },
+        origin: true, // Allow all for Socket.IO too
         methods: ["GET", "POST"],
         credentials: true
     }
