@@ -101,7 +101,7 @@ export function LobbyScreen() {
             onClick={() => setView('dashboard')}
             style={{ marginBottom: '1rem', background: '#444', border: '1px solid #666', padding: '0.5rem 1rem' }}
         >
-            ← Volver al Inicio
+            {t('lobby.back')}
         </button>
     );
 
