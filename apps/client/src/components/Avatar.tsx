@@ -51,7 +51,17 @@ export function Avatar({
 
             {/* Name Label */}
             {/* Name Label - Half Size */}
-            <Text position={[0, labelHeight, 0]} fontSize={0.25} color="white" anchorX="center" anchorY="bottom">
+            {/* Name Label */}
+            {/* Name Label - Half Size */}
+            <Text
+                position={[0, labelHeight, 0]}
+                fontSize={0.25}
+                color="white"
+                anchorX="center"
+                anchorY="bottom"
+                outlineWidth={0.02}
+                outlineColor="black"
+            >
                 {label}
             </Text>
 
