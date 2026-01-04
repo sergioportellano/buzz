@@ -123,12 +123,7 @@ export function LobbyScreen() {
         </button>
     );
 
-    // Helper to check ownership
-    const isOwned = (modelId: string) => {
-        if (modelId === 'player.glb') return true;
-        // @ts-ignore
-        return user?.ownedItems?.includes(modelId);
-    };
+
 
     return (
         <div className="container" style={{ position: 'relative', zIndex: 1, padding: '2rem' }}>
