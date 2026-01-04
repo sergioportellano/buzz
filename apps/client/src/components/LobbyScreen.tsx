@@ -328,7 +328,7 @@ export function LobbyScreen() {
                         </div>
 
                         <div style={{ textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
-                            <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>{t('profile.select_avatar')}</h3>
+                            <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>✏️ {t('profile.select_avatar')}</h3>
 
                             {/* Selected Character Preview (Click to open selector) */}
                             <div
