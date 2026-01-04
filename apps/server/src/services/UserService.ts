@@ -11,6 +11,7 @@ export class UserService {
                 email: true,
                 isAdmin: true,
                 isVerified: true,
+                gems: true,
                 createdAt: true
             },
             orderBy: { createdAt: 'desc' }

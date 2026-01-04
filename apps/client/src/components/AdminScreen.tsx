@@ -191,6 +191,10 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
 
             if (res.ok) {
                 fetchUsers();
+                // If modifying self, update local store
+                if (selectedUserForGems.id === user?.id) {
+                    useUserStore.getState().fetchUser();
+                }
                 setSelectedUserForGems(null);
                 setGemAmount(0);
             } else {
