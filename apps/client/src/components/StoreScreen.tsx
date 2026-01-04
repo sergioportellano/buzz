@@ -47,7 +47,7 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
         setBuying(false);
 
         if (result.success) {
-            setMessage({ text: 'Compusiste con éxito!', type: 'success' });
+            setMessage({ text: '¡Compraste con éxito!', type: 'success' });
             // Refresh owned status implicitly via user store update
         } else {
             setMessage({ text: result.error || 'Error al comprar', type: 'error' });
@@ -112,8 +112,8 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* Right: Preview */}
-            <div style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                <div style={{ flex: 1, minHeight: 0 }}>
                     <Canvas>
                         <PerspectiveCamera makeDefault position={[0, 1.5, 3]} />
                         <OrbitControls
@@ -137,7 +137,7 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                     </Canvas>
                 </div>
 
-                <div style={{ padding: '2rem', background: '#111', borderTop: '1px solid #333' }}>
+                <div style={{ padding: '2rem', background: '#111', borderTop: '1px solid #333', overflowY: 'auto', maxHeight: '40vh' }}>
                     {selectedItem ? (
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
@@ -183,7 +183,8 @@ export function StoreScreen({ onClose }: { onClose: () => void }) {
                             color: message.type === 'success' ? '#00cc66' : '#ff4444',
                             textAlign: 'center'
                         }}>
-                            {message.text}
+                            {/* Correction: Compraste */}
+                            {message.text.replace('Compusiste', 'Compraste')}
                         </div>
                     )}
                 </div>
